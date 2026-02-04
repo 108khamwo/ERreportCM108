@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Admin - Election Reporter Mobile</title>
+    <title>Admin - Election Reporter Mobile (Secure)</title>
     
     <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
     <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
@@ -41,6 +41,11 @@
             border-radius: 8px;
             background-color: #e2e8f0;
         }
+        
+        /* Styles for Login Screen */
+        .beam { position: absolute; width: 200vw; height: 40vh; background: linear-gradient(90deg, transparent 0%, rgba(30, 64, 175, 0.3) 25%, rgba(59, 130, 246, 0.7) 50%, rgba(30, 64, 175, 0.3) 75%, transparent 100% ); transform: rotate(-25deg); filter: blur(80px); pointer-events: none; z-index: 5; mix-blend-mode: screen; }
+        .beam-1 { top: -20%; left: -50%; animation: sweep 12s infinite ease-in-out; }
+        @keyframes sweep { 0% { transform: translate(-15%, -5%) rotate(-25deg); } 50% { transform: translate(15%, 5%) rotate(-25deg); } 100% { transform: translate(-15%, -5%) rotate(-25deg); } }
     </style>
 </head>
 <body>
@@ -74,6 +79,7 @@
             }))
         };
 
+        // --- Icon Components ---
         const Icon = ({ name, className = "" }) => {
             const icons = {
                 score: <path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01" />,
@@ -87,24 +93,129 @@
                 save: <path d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4" />,
                 chevronDown: <path d="M19 9l-7 7-7-7" />,
                 chevronUp: <path d="M5 15l7-7 7 7" />,
-                monitor: <path d="M2 8a2 2 0 012-2h16a2 2 0 012 2v8a2 2 0 01-2 2H4a2 2 0 01-2-2V8z M7 21h10 M12 18v3" />
+                monitor: <path d="M2 8a2 2 0 012-2h16a2 2 0 012 2v8a2 2 0 01-2 2H4a2 2 0 01-2-2V8z M7 21h10 M12 18v3" />,
+                lock: <path d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />,
+                logout: <path d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
             };
             return <svg className={`w-5 h-5 ${className}`} fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth="2.5">{icons[name]}</svg>;
         };
 
+        const LoaderIcon = ({ size=20 }) => (
+            <svg className="animate-spin" width={size} height={size} xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+            </svg>
+        );
+
+        // --- Login Component (Mobile Optimized) ---
+        function LoginScreen({ onLoginSuccess }) {
+            const [email, setEmail] = useState('');
+            const [password, setPassword] = useState('');
+            const [error, setError] = useState('');
+            const [loading, setLoading] = useState(false);
+
+            const handleLogin = async (e) => {
+                e.preventDefault(); 
+                setLoading(true); 
+                setError('');
+                try { 
+                    await auth.signInWithEmailAndPassword(email, password);
+                } catch (err) { 
+                    setError('ล็อกอินไม่สำเร็จ ตรวจสอบอีเมลและรหัสผ่าน'); 
+                    setLoading(false); 
+                }
+            };
+
+            return (
+                <div className="min-h-[100dvh] flex items-center justify-center bg-slate-900 p-4 relative overflow-hidden">
+                    {/* Background Beams */}
+                    <div className="beam beam-1 opacity-20"></div>
+                    
+                    <div className="w-full max-w-sm relative z-10 flex flex-col gap-6 animate-[fadeIn_0.5s]">
+                        {/* Header Section */}
+                        <div className="text-center">
+                             <div className="w-24 h-24 bg-blue-500/10 text-blue-400 rounded-[2rem] flex items-center justify-center mx-auto mb-6 border border-blue-500/20 shadow-[0_0_30px_rgba(59,130,246,0.2)]">
+                                <Icon name="lock" className="w-10 h-10" />
+                            </div>
+                            <h2 className="text-3xl font-black text-white uppercase tracking-tight">Admin Login</h2>
+                            <p className="text-blue-200/60 text-sm mt-2">สำหรับเจ้าหน้าที่บันทึกคะแนน</p>
+                        </div>
+
+                        {/* Login Form Card */}
+                        <div className="bg-white/10 backdrop-blur-xl rounded-3xl shadow-2xl p-6 border border-white/10">
+                            <form onSubmit={handleLogin} className="space-y-4">
+                                <div>
+                                    <label className="block text-[10px] font-bold text-blue-300 uppercase mb-1.5 ml-1 tracking-widest">Email Address</label>
+                                    <input 
+                                        type="email" 
+                                        value={email} 
+                                        onChange={e=>setEmail(e.target.value)} 
+                                        required 
+                                        className="w-full bg-slate-900/50 border border-white/10 rounded-2xl px-4 py-3.5 text-white focus:border-blue-500 focus:bg-slate-900/80 outline-none transition-all placeholder:text-white/20 text-base" 
+                                        placeholder="user@example.com"
+                                        inputMode="email"
+                                    />
+                                </div>
+                                <div>
+                                    <label className="block text-[10px] font-bold text-blue-300 uppercase mb-1.5 ml-1 tracking-widest">Password</label>
+                                    <input 
+                                        type="password" 
+                                        value={password} 
+                                        onChange={e=>setPassword(e.target.value)} 
+                                        required 
+                                        className="w-full bg-slate-900/50 border border-white/10 rounded-2xl px-4 py-3.5 text-white focus:border-blue-500 focus:bg-slate-900/80 outline-none transition-all placeholder:text-white/20 text-base" 
+                                        placeholder="••••••••"
+                                    />
+                                </div>
+                                {error && (
+                                    <div className="text-red-300 text-xs font-medium text-center bg-red-500/20 p-3 rounded-xl border border-red-500/20 flex items-center justify-center gap-2">
+                                        <div className="w-1.5 h-1.5 rounded-full bg-red-400 animate-pulse"></div>
+                                        {error}
+                                    </div>
+                                )}
+                                <button 
+                                    type="submit" 
+                                    disabled={loading} 
+                                    className="w-full bg-blue-600 hover:bg-blue-500 text-white font-bold py-4 rounded-2xl active:scale-95 transition-all flex justify-center items-center gap-2 shadow-lg shadow-blue-900/20 mt-2"
+                                >
+                                    {loading ? <LoaderIcon /> : 'เข้าสู่ระบบ'}
+                                </button>
+                            </form>
+                        </div>
+                        
+                        <div className="text-center">
+                             <p className="text-[10px] text-slate-500 uppercase tracking-widest font-bold">Secure Election System v9.5</p>
+                        </div>
+                    </div>
+                </div>
+            );
+        }
+
         const App = () => {
+            const [user, setUser] = useState(null);
+            const [authLoading, setAuthLoading] = useState(true);
             const [data, setData] = useState(null);
             const [activeTab, setActiveTab] = useState('score');
             const [selectedDistrict, setSelectedDistrict] = useState(1);
             const [isSaving, setIsSaving] = useState(false);
             const [status, setStatus] = useState('connecting');
-            // เปลี่ยนเป็น false เพื่อให้ซ่อนเริ่มต้น
             const [showBottomNav, setShowBottomNav] = useState(false);
 
+            // Auth Listener
             useEffect(() => {
+                const unsubscribe = auth.onAuthStateChanged((u) => {
+                    setUser(u);
+                    setAuthLoading(false);
+                });
+                return () => unsubscribe();
+            }, []);
+
+            // Data Fetcher
+            useEffect(() => {
+                if (!user) return; // Wait for login
+
                 const init = async () => {
                     try {
-                        await auth.signInAnonymously();
                         const docRef = db.collection('election_data').doc('chiangmai_live');
                         const unsubscribe = docRef.onSnapshot((doc) => {
                             if (doc.exists) {
@@ -120,7 +231,7 @@
                     }
                 };
                 init();
-            }, []);
+            }, [user]);
 
             const handleInputChange = (candidateNo, value) => {
                 const newData = { ...data };
@@ -146,11 +257,21 @@
                 }
             };
 
+            const handleLogout = async () => {
+                if(confirm('ต้องการออกจากระบบ?')) {
+                    await auth.signOut();
+                }
+            };
+
+            if (authLoading) return <div className="h-screen flex items-center justify-center bg-slate-900 text-white"><LoaderIcon size={40} /></div>;
+            
+            if (!user) return <LoginScreen />;
+
             if (!data) return (
                 <div className="h-screen flex items-center justify-center bg-slate-900 text-white">
                     <div className="text-center">
                         <div className="animate-spin rounded-full h-10 w-10 border-t-2 border-blue-500 mx-auto mb-4"></div>
-                        <p className="animate-pulse text-sm">กำลังเชื่อมต่อ...</p>
+                        <p className="animate-pulse text-sm">กำลังโหลดข้อมูล...</p>
                     </div>
                 </div>
             );
@@ -264,7 +385,7 @@
                                 <div className="bg-white p-5 rounded-3xl shadow-sm border border-blue-100 space-y-4">
                                     <div className="flex items-center gap-2 mb-2 text-blue-600">
                                         <Icon name="monitor" className="w-5 h-5" />
-                                        <h3 className="font-bold text-sm uppercase tracking-wide">ควบคุมการแสดงผลหน้าจอหลัก</h3>
+                                        <h3 className="font-bold text-sm uppercase tracking-wide">ควบคุมหน้าจอหลัก</h3>
                                     </div>
                                     
                                     <div className="space-y-3">
@@ -321,7 +442,12 @@
                                         </div>
                                     </div>
                                 </div>
-                                <button onClick={saveCurrentDistrict} className="w-full bg-slate-900 text-white py-4 rounded-2xl font-black shadow-xl active:scale-95 transition-all">บันทึกตั้งค่า & คำสั่งควบคุม</button>
+                                <button onClick={saveCurrentDistrict} className="w-full bg-slate-900 text-white py-4 rounded-2xl font-black shadow-xl active:scale-95 transition-all mb-4">บันทึกตั้งค่า & คำสั่งควบคุม</button>
+                                
+                                {/* Logout Button */}
+                                <button onClick={handleLogout} className="w-full bg-red-50 text-red-600 border-2 border-red-100 py-3 rounded-2xl font-bold flex items-center justify-center gap-2 active:bg-red-100 transition-colors">
+                                    <Icon name="logout" /> ออกจากระบบ
+                                </button>
                             </div>
                         )}
 

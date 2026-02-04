@@ -47,44 +47,59 @@
 
     <!-- Main Content -->
     <main class="flex-grow flex items-center justify-center p-6">
-        <div class="max-w-5xl w-full grid grid-cols-1 md:grid-cols-2 gap-8">
+        <!-- ปรับ grid-cols-2 เป็น grid-cols-3 สำหรับหน้าจอใหญ่ -->
+        <div class="max-w-7xl w-full grid grid-cols-1 md:grid-cols-3 gap-6">
             
-            <!-- Web System Card -->
+            <!-- 1. Web System Card -->
             <div class="glass-card rounded-3xl p-8 flex flex-col items-center text-center border-t-4 border-blue-500">
-                <div class="w-24 h-24 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center mb-6">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <div class="w-20 h-20 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center mb-6">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9h18" />
                     </svg>
                 </div>
-                <h2 class="text-2xl font-bold text-gray-800 mb-2">WEBSITE</h2>
-                <p class="text-gray-600 mb-8 leading-relaxed">
-                    ระบบรายงานผลหลัก สำหรับการตรวจสอบคะแนนภาพรวม สรุปผล และการแสดงผลบนหน้าจอขนาดใหญ่ (PC/Tablet)
+                <h2 class="text-xl font-bold text-gray-800 mb-2 uppercase">Website System</h2>
+                <p class="text-gray-600 mb-8 text-sm leading-relaxed h-12">
+                    ตรวจสอบคะแนนภาพรวม สรุปผล และการแสดงผลบน PC/Tablet
                 </p>
-                <!-- Link to ERreportCM108 folder -->
-                <a href="./ERreportCM108/" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-4 px-6 rounded-2xl transition duration-300 shadow-lg shadow-blue-200 flex items-center justify-center space-x-2">
+                <a href="./ERreportCM108/" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-4 px-4 rounded-2xl transition duration-300 shadow-lg shadow-blue-200 flex items-center justify-center space-x-2">
                     <span>เข้าสู่ระบบ WEBSITE</span>
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-                        <path fill-rule="evenodd" d="M10.293 3.293a1 1 0 011.414 0l6 6a1 1 0 010 1.414l-6 6a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-4.293-4.293a1 1 0 010-1.414z" clip-rule="evenodd" />
-                    </svg>
                 </a>
             </div>
 
-            <!-- Mobile System Card -->
+            <!-- 2. Mobile System Card -->
             <div class="glass-card rounded-3xl p-8 flex flex-col items-center text-center border-t-4 border-indigo-500">
-                <div class="w-24 h-24 bg-indigo-100 text-indigo-600 rounded-full flex items-center justify-center mb-6">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <div class="w-20 h-20 bg-indigo-100 text-indigo-600 rounded-full flex items-center justify-center mb-6">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z" />
                     </svg>
                 </div>
-                <h2 class="text-2xl font-bold text-gray-800 mb-2">MOBILE</h2>
-                <p class="text-gray-600 mb-8 leading-relaxed">
-                    ระบบบันทึกคะแนนภาคสนาม สำหรับเจ้าหน้าที่หน่วยเลือกตั้ง ใช้งานผ่านสมาร์ทโฟนเพื่อความรวดเร็ว
+                <h2 class="text-xl font-bold text-gray-800 mb-2 uppercase">Mobile System</h2>
+                <p class="text-gray-600 mb-8 text-sm leading-relaxed h-12">
+                    ระบบบันทึกคะแนนภาคสนาม สำหรับเจ้าหน้าที่หน่วยเลือกตั้งผ่านมือถือ
                 </p>
-                <!-- Link to ERreportCM108Mobile folder -->
-                <a href="./ERreportCM108Mobile/" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-4 px-6 rounded-2xl transition duration-300 shadow-lg shadow-indigo-200 flex items-center justify-center space-x-2">
+                <a href="./ERreportCM108Mobile/" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-4 px-4 rounded-2xl transition duration-300 shadow-lg shadow-indigo-200 flex items-center justify-center space-x-2">
                     <span>เข้าสู่ระบบ MOBILE</span>
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-                        <path fill-rule="evenodd" d="M10.293 3.293a1 1 0 011.414 0l6 6a1 1 0 010 1.414l-6 6a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-4.293-4.293a1 1 0 010-1.414z" clip-rule="evenodd" />
+                </a>
+            </div>
+
+            <!-- 3. Drive Storage Card (NEW) -->
+            <div class="glass-card rounded-3xl p-8 flex flex-col items-center text-center border-t-4 border-emerald-500">
+                <div class="w-20 h-20 bg-emerald-100 text-emerald-600 rounded-full flex items-center justify-center mb-6">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z" />
+                    </svg>
+                </div>
+                <h2 class="text-xl font-bold text-gray-800 mb-2 uppercase">Drive Storage</h2>
+                <p class="text-gray-600 mb-8 text-sm leading-relaxed h-12">
+                    คลังเก็บข้อมูลเอกสาร แบบฟอร์ม และสื่อต่างๆ ที่เกี่ยวข้อง
+                </p>
+                <a href="https://drive.google.com/drive/folders/1U5W3Zsa6E8AcQ7dXhFx3klcrvg-U0Iqa" 
+                   target="_blank" 
+                   rel="noopener noreferrer" 
+                   class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-semibold py-4 px-4 rounded-2xl transition duration-300 shadow-lg shadow-emerald-200 flex items-center justify-center space-x-2">
+                    <span>เปิดคลังข้อมูล DRIVE</span>
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
                     </svg>
                 </a>
             </div>
@@ -98,7 +113,7 @@
         <div class="mt-4 flex justify-center space-x-6 text-xs font-medium text-gray-400">
             <span>Server Status: Online</span>
             <span>•</span>
-            <span>Version 1.0.2</span>
+            <span>Version 1.1.0</span>
         </div>
     </footer>
 
@@ -109,4 +124,3 @@
     </script>
 </body>
 </html>
-

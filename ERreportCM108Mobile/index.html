@@ -27,8 +27,19 @@
         input[type="number"]::-webkit-inner-spin-button,
         input[type="number"]::-webkit-outer-spin-button { -webkit-appearance: none; margin: 0; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-        .sticky-save-btn {
-            box-shadow: 0 -4px 15px rgba(0,0,0,0.15);
+        
+        .nav-transition {
+            transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .nav-hidden {
+            transform: translateY(100%);
+        }
+        .candidate-img {
+            width: 48px;
+            height: 64px;
+            object-fit: cover;
+            border-radius: 8px;
+            background-color: #e2e8f0;
         }
     </style>
 </head>
@@ -63,7 +74,7 @@
             }))
         };
 
-        const Icon = ({ name }) => {
+        const Icon = ({ name, className = "" }) => {
             const icons = {
                 score: <path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01" />,
                 settings: (
@@ -73,9 +84,11 @@
                     </React.Fragment>
                 ),
                 colors: <path d="M7 21a4 4 0 01-4-4V5a2 2 0 012-2h4a2 2 0 012 2v12a4 4 0 01-4 4zm0 0h12a2 2 0 002-2v-4a2 2 0 00-2-2h-2.343M11 7.343l1.657-1.657a2 2 0 012.828 0l2.829 2.829a2 2 0 010 2.828l-8.486 8.485M7 17h.01" />,
-                save: <path d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4" />
+                save: <path d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4" />,
+                chevronDown: <path d="M19 9l-7 7-7-7" />,
+                chevronUp: <path d="M5 15l7-7 7 7" />
             };
-            return <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth="2.5">{icons[name]}</svg>;
+            return <svg className={`w-5 h-5 ${className}`} fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth="2.5">{icons[name]}</svg>;
         };
 
         const App = () => {
@@ -84,6 +97,7 @@
             const [selectedDistrict, setSelectedDistrict] = useState(1);
             const [isSaving, setIsSaving] = useState(false);
             const [status, setStatus] = useState('connecting');
+            const [showBottomNav, setShowBottomNav] = useState(true);
 
             useEffect(() => {
                 const init = async () => {
@@ -105,14 +119,6 @@
                 };
                 init();
             }, []);
-
-            const updateScore = (candidateNo, delta) => {
-                const newData = { ...data };
-                const district = newData.districts.find(d => d.id === selectedDistrict);
-                const candidate = district.candidates.find(c => c.no === candidateNo);
-                candidate.score = Math.max(0, (candidate.score || 0) + delta);
-                setData(newData);
-            };
 
             const handleInputChange = (candidateNo, value) => {
                 const newData = { ...data };
@@ -155,7 +161,7 @@
                     <header className="bg-slate-900 text-white p-4 shrink-0 shadow-lg relative z-50">
                         <div className="flex justify-between items-end">
                             <div>
-                                <h1 className="font-bold text-lg leading-tight uppercase tracking-tight">Election Admin</h1>
+                                <h1 className="font-bold text-lg leading-tight uppercase tracking-tight text-shadow">Election Admin</h1>
                                 <div className="flex items-center gap-1.5 mt-1">
                                     <div className={`w-2 h-2 rounded-full ${status === 'online' ? 'bg-green-500 shadow-[0_0_8px_rgba(34,197,94,0.6)]' : 'bg-red-500 animate-pulse'}`}></div>
                                     <span className="text-[10px] uppercase font-bold tracking-widest text-slate-400">{status}</span>
@@ -163,84 +169,93 @@
                             </div>
                             <div className="text-right">
                                 <div className="text-[10px] uppercase font-bold text-slate-500 tracking-wider">เชียงใหม่</div>
-                                <div className="text-xs font-bold text-blue-400 uppercase">Mobile Dashboard</div>
+                                <div className="text-xs font-bold text-blue-400 uppercase">Mobile Panel</div>
                             </div>
                         </div>
                     </header>
 
                     {/* Main Content */}
-                    <main className="flex-1 overflow-y-auto pb-40">
+                    <main className={`flex-1 overflow-y-auto transition-all duration-300 ${showBottomNav ? 'pb-24' : 'pb-12'}`}>
                         {activeTab === 'score' && (
                             <div className="animate-[fadeIn_0.3s]">
-                                {/* District Quick Bar */}
-                                <div className="flex overflow-x-auto hide-scrollbar bg-white border-b sticky top-0 z-40 p-2.5 gap-2 shadow-sm">
-                                    {data.districts.map(d => (
-                                        <button
-                                            key={d.id}
-                                            onClick={() => setSelectedDistrict(d.id)}
-                                            className={`px-5 py-2.5 rounded-2xl text-xs font-bold whitespace-nowrap transition-all ${
-                                                selectedDistrict === d.id 
-                                                ? 'bg-blue-600 text-white shadow-lg scale-105' 
-                                                : 'bg-slate-50 text-slate-400 border border-slate-100'
-                                            }`}
-                                        >
-                                            เขต {d.id}
-                                        </button>
-                                    ))}
+                                {/* District Selector Grid */}
+                                <div className="bg-white border-b sticky top-0 z-40 p-3 shadow-sm">
+                                    <div className="grid grid-cols-5 gap-1.5">
+                                        {data.districts.map(d => (
+                                            <button
+                                                key={d.id}
+                                                onClick={() => setSelectedDistrict(d.id)}
+                                                className={`py-2 rounded-xl text-[11px] font-bold transition-all border ${
+                                                    selectedDistrict === d.id 
+                                                    ? 'bg-blue-600 text-white border-blue-600 shadow-md scale-105' 
+                                                    : 'bg-slate-50 text-slate-500 border-slate-100 hover:bg-slate-100'
+                                                }`}
+                                            >
+                                                เขต {d.id}
+                                            </button>
+                                        ))}
+                                    </div>
                                 </div>
 
                                 {/* District Info & Local Save Button */}
-                                <div className="p-4 bg-white border-b flex justify-between items-center sticky top-[58px] z-30 shadow-sm">
+                                <div className="p-4 bg-white border-b flex justify-between items-center sticky top-[106px] z-30 shadow-sm">
                                     <div>
                                         <div className="text-lg font-black text-slate-800 uppercase">{currentDistrictObj.name}</div>
-                                        <div className="text-[10px] font-bold text-slate-400 uppercase">อัปเดต: {currentDistrictObj.lastUpdated || 'ยังไม่มีข้อมูล'}</div>
+                                        <div className="text-[10px] font-bold text-slate-400 uppercase tracking-wide">อัปเดต: {currentDistrictObj.lastUpdated || 'รอข้อมูล'}</div>
                                     </div>
                                     <button 
                                         onClick={saveCurrentDistrict}
                                         className="bg-green-600 active:bg-green-700 text-white px-5 py-2.5 rounded-2xl font-bold text-sm shadow-md flex items-center gap-2 transition-transform active:scale-95"
                                     >
-                                        {isSaving ? '...' : <><Icon name="save" /> บันทึกเขต {selectedDistrict}</>}
+                                        {isSaving ? '...' : <><Icon name="save" /> บันทึก</>}
                                     </button>
                                 </div>
 
-                                {/* Candidate Cards - Compact Layout */}
-                                <div className="p-3 space-y-2">
+                                {/* Candidate Cards - Enhanced for Names and Images */}
+                                <div className="p-2 space-y-2">
                                     {currentDistrictObj.candidates.map((c, index) => (
-                                        <div key={c.no} className="bg-white rounded-2xl p-3 shadow-sm border border-slate-200 flex flex-col gap-3">
-                                            <div className="flex items-center gap-3">
-                                                <div className="w-8 h-8 rounded-xl bg-slate-900 text-white flex items-center justify-center font-bold text-sm shrink-0 shadow-sm">
+                                        <div key={c.no} className="bg-white rounded-2xl p-2.5 shadow-sm border border-slate-200 flex items-center gap-3">
+                                            {/* Candidate Image or Placeholder */}
+                                            <div className="shrink-0 relative">
+                                                <img 
+                                                    src={c.image || `https://placehold.co/100x133/0f172a/FFFFFF?text=${c.no}`} 
+                                                    alt={c.name}
+                                                    className="candidate-img border border-slate-100 shadow-sm"
+                                                />
+                                                <div className="absolute -top-1 -left-1 w-6 h-6 bg-slate-900 text-white text-[10px] font-black rounded-lg flex items-center justify-center shadow-lg border border-white">
                                                     {c.no}
                                                 </div>
-                                                <div className="flex-1 min-w-0 pr-2">
-                                                    <div className="font-bold text-slate-800 truncate text-sm leading-tight">{c.name}</div>
-                                                    <div className="text-[10px] text-slate-400 font-bold uppercase truncate">{c.party}</div>
+                                            </div>
+
+                                            {/* Candidate Details */}
+                                            <div className="flex-1 min-w-0 py-1">
+                                                <div className="font-bold text-slate-800 text-base leading-tight mb-1 truncate">
+                                                    {c.name}
                                                 </div>
-                                                <div className="shrink-0">
-                                                    <input 
-                                                        id={`score-input-${index}`}
-                                                        type="number" 
-                                                        value={c.score}
-                                                        onChange={(e) => handleInputChange(c.no, e.target.value)}
-                                                        onFocus={(e) => e.target.select()}
-                                                        onKeyDown={(e) => {
-                                                            if (e.key === 'Enter') {
-                                                                e.preventDefault();
-                                                                const nextInput = document.getElementById(`score-input-${index + 1}`);
-                                                                if (nextInput) { nextInput.focus(); nextInput.select(); }
-                                                            }
-                                                        }}
-                                                        enterKeyHint="next"
-                                                        className="w-24 bg-slate-50 border-2 border-slate-100 rounded-xl py-2 px-2 text-center text-xl font-black text-blue-700 focus:border-blue-500 focus:bg-white outline-none shadow-inner"
-                                                    />
+                                                <div className="inline-block px-2 py-0.5 rounded-md bg-slate-100 text-[10px] font-bold text-slate-500 uppercase tracking-wide border border-slate-200 truncate max-w-full">
+                                                    {c.party}
                                                 </div>
                                             </div>
-                                            
-                                            {/* Quick Step Controls */}
-                                            <div className="flex gap-1.5 pt-1 border-t border-slate-50">
-                                                <button onClick={() => updateScore(c.no, 100)} className="flex-1 bg-blue-50 text-blue-700 py-2 rounded-xl font-bold text-[10px] border border-blue-100">+100</button>
-                                                <button onClick={() => updateScore(c.no, 10)} className="flex-1 bg-blue-50 text-blue-700 py-2 rounded-xl font-bold text-[10px] border border-blue-100">+10</button>
-                                                <button onClick={() => updateScore(c.no, -10)} className="flex-1 bg-red-50 text-red-700 py-2 rounded-xl font-bold text-[10px] border border-red-100">-10</button>
-                                                <button onClick={() => updateScore(c.no, -1)} className="w-10 bg-slate-100 text-slate-500 py-2 rounded-xl font-bold text-[10px] border border-slate-200">-1</button>
+
+                                            {/* Score Input Only */}
+                                            <div className="shrink-0 pl-1 border-l border-slate-50">
+                                                <div className="text-[9px] font-bold text-slate-300 uppercase mb-1 text-center">คะแนน</div>
+                                                <input 
+                                                    id={`score-input-${index}`}
+                                                    type="number" 
+                                                    value={c.score}
+                                                    onChange={(e) => handleInputChange(c.no, e.target.value)}
+                                                    onFocus={(e) => e.target.select()}
+                                                    onKeyDown={(e) => {
+                                                        if (e.key === 'Enter') {
+                                                            e.preventDefault();
+                                                            const nextInput = document.getElementById(`score-input-${index + 1}`);
+                                                            if (nextInput) { nextInput.focus(); nextInput.select(); }
+                                                        }
+                                                    }}
+                                                    enterKeyHint="next"
+                                                    className="w-20 bg-slate-50 border-2 border-slate-100 rounded-xl py-3 px-1 text-center text-xl font-black text-blue-700 focus:border-blue-500 focus:bg-white outline-none shadow-inner"
+                                                />
                                             </div>
                                         </div>
                                     ))}
@@ -248,86 +263,97 @@
                             </div>
                         )}
 
-                        {/* Settings Tab Content */}
+                        {/* Settings & Colors (Same as previous) */}
                         {activeTab === 'settings' && (
                             <div className="p-6 space-y-6 animate-[fadeIn_0.3s]">
                                 <h2 className="text-xl font-black text-slate-800 uppercase tracking-tight">ตั้งค่าระบบ</h2>
                                 <div className="space-y-4">
                                     <div className="space-y-1.5">
                                         <label className="text-xs font-bold text-slate-400 uppercase tracking-widest ml-1">ชื่อรายการหัวข้อ</label>
-                                        <input type="text" value={data.settings.title} onChange={(e) => setData({...data, settings: {...data.settings, title: e.target.value}})} className="w-full bg-white border-2 border-slate-200 rounded-2xl px-4 py-3.5 font-bold outline-none" />
+                                        <input type="text" value={data.settings.title} onChange={(e) => setData({...data, settings: {...data.settings, title: e.target.value}})} className="w-full bg-white border-2 border-slate-200 rounded-2xl px-4 py-3.5 font-bold outline-none shadow-sm" />
                                     </div>
                                     <div className="space-y-1.5">
                                         <label className="text-xs font-bold text-slate-400 uppercase tracking-widest ml-1">ข้อความวิ่ง</label>
-                                        <textarea rows="3" value={data.settings.footer} onChange={(e) => setData({...data, settings: {...data.settings, footer: e.target.value}})} className="w-full bg-white border-2 border-slate-200 rounded-2xl px-4 py-3.5 font-bold outline-none resize-none" />
+                                        <textarea rows="3" value={data.settings.footer} onChange={(e) => setData({...data, settings: {...data.settings, footer: e.target.value}})} className="w-full bg-white border-2 border-slate-200 rounded-2xl px-4 py-3.5 font-bold outline-none shadow-sm resize-none" />
                                     </div>
                                     <div className="grid grid-cols-2 gap-4">
                                         <div className="space-y-1.5">
                                             <label className="text-[10px] font-bold text-slate-400 uppercase ml-1">วนลูป (วิ)</label>
-                                            <input type="number" value={data.settings.cycleTime} onChange={(e) => setData({...data, settings: {...data.settings, cycleTime: parseInt(e.target.value) || 0}})} className="w-full bg-white border-2 border-slate-200 rounded-2xl px-4 py-3.5 text-center font-bold outline-none" />
+                                            <input type="number" value={data.settings.cycleTime} onChange={(e) => setData({...data, settings: {...data.settings, cycleTime: parseInt(e.target.value) || 0}})} className="w-full bg-white border-2 border-slate-200 rounded-2xl px-4 py-3.5 text-center font-bold outline-none shadow-sm" />
                                         </div>
                                         <div className="space-y-1.5">
                                             <label className="text-[10px] font-bold text-slate-400 uppercase ml-1">ความเร็วตัววิ่ง</label>
-                                            <input type="number" value={data.settings.marqueeSpeed} onChange={(e) => setData({...data, settings: {...data.settings, marqueeSpeed: parseInt(e.target.value) || 0}})} className="w-full bg-white border-2 border-slate-200 rounded-2xl px-4 py-3.5 text-center font-bold outline-none" />
+                                            <input type="number" value={data.settings.marqueeSpeed} onChange={(e) => setData({...data, settings: {...data.settings, marqueeSpeed: parseInt(e.target.value) || 0}})} className="w-full bg-white border-2 border-slate-200 rounded-2xl px-4 py-3.5 text-center font-bold outline-none shadow-sm" />
                                         </div>
                                     </div>
                                 </div>
-                                <button onClick={saveCurrentDistrict} className="w-full bg-slate-900 text-white py-4 rounded-2xl font-black shadow-xl">บันทึกตั้งค่า</button>
+                                <button onClick={saveCurrentDistrict} className="w-full bg-slate-900 text-white py-4 rounded-2xl font-black shadow-xl active:scale-95 transition-all">บันทึกตั้งค่า</button>
                             </div>
                         )}
 
                         {activeTab === 'colors' && (
                             <div className="p-6 animate-[fadeIn_0.3s]">
                                 <h2 className="text-xl font-black text-slate-800 uppercase tracking-tight mb-4">จัดการสีพรรค</h2>
-                                <div className="grid grid-cols-1 gap-3">
+                                <div className="grid grid-cols-1 gap-2">
                                     {Object.entries(data.partyColors || {}).map(([party, color]) => (
-                                        <div key={party} className="bg-white p-3 rounded-2xl border flex items-center justify-between shadow-sm">
+                                        <div key={party} className="bg-white p-3 rounded-2xl border flex items-center justify-between shadow-sm border-slate-100">
                                             <span className="font-bold text-slate-700 text-sm">{party}</span>
                                             <div className="flex items-center gap-2">
-                                                <span className="text-[10px] font-mono font-bold text-slate-300 uppercase">{color}</span>
-                                                <input type="color" value={color} onChange={(e) => setData({...data, partyColors: {...data.partyColors, [party]: e.target.value}})} className="w-10 h-10 border-2 border-white rounded-full bg-transparent" />
+                                                <span className="text-[10px] font-mono font-bold text-slate-300 uppercase tracking-tighter">{color}</span>
+                                                <input type="color" value={color} onChange={(e) => setData({...data, partyColors: {...data.partyColors, [party]: e.target.value}})} className="w-10 h-10 border-2 border-white rounded-full bg-transparent shadow-sm" />
                                             </div>
                                         </div>
                                     ))}
                                 </div>
-                                <button onClick={saveCurrentDistrict} className="w-full mt-8 bg-slate-900 text-white py-4 rounded-2xl font-black shadow-xl">บันทึกสีพรรค</button>
+                                <button onClick={saveCurrentDistrict} className="w-full mt-8 bg-slate-900 text-white py-4 rounded-2xl font-black shadow-xl active:scale-95 transition-all">บันทึกสีพรรค</button>
                             </div>
                         )}
                     </main>
 
-                    {/* Floating Save Button - Active only in score tab */}
+                    {/* Floating Save Button */}
                     {activeTab === 'score' && (
-                        <div className="fixed bottom-24 right-4 z-[60]">
+                        <div className={`fixed transition-all duration-300 z-[60] right-4 ${showBottomNav ? 'bottom-20' : 'bottom-6'}`}>
                             <button 
                                 onClick={saveCurrentDistrict}
                                 disabled={isSaving}
-                                className={`w-14 h-14 rounded-full flex items-center justify-center shadow-2xl transition-all active:scale-90 ${isSaving ? 'bg-slate-400' : 'bg-green-600 text-white'}`}
+                                className={`w-12 h-12 rounded-full flex items-center justify-center shadow-2xl transition-all active:scale-90 ${isSaving ? 'bg-slate-400' : 'bg-green-600 text-white'}`}
                             >
                                 <Icon name="save" />
                             </button>
                         </div>
                     )}
 
-                    {/* Tab Navigation */}
-                    <nav className="fixed bottom-0 left-0 right-0 max-w-md mx-auto bg-white border-t flex justify-around items-center px-4 pt-3 pb-8 shadow-inner z-[50]">
-                        <button onClick={() => setActiveTab('score')} className={`flex flex-col items-center p-2 transition-all ${activeTab === 'score' ? 'text-blue-600 scale-110' : 'text-slate-400'}`}>
+                    {/* Toggle Button */}
+                    <div className={`fixed z-[70] left-1/2 -translate-x-1/2 nav-transition ${showBottomNav ? 'bottom-[60px]' : 'bottom-[-4px]'}`}>
+                        <button 
+                            onClick={() => setShowBottomNav(!showBottomNav)}
+                            className="bg-slate-900 text-white px-4 py-1 rounded-t-xl shadow-lg flex items-center gap-1 active:bg-slate-800 border-x border-t border-slate-700"
+                        >
+                            <Icon name={showBottomNav ? "chevronDown" : "chevronUp"} className="w-3.5 h-3.5" />
+                            <span className="text-[9px] font-bold uppercase tracking-widest">{showBottomNav ? "ซ่อนเมนู" : "แสดงเมนู"}</span>
+                        </button>
+                    </div>
+
+                    {/* Bottom Nav */}
+                    <nav className={`fixed bottom-0 left-0 right-0 max-w-md mx-auto bg-white border-t flex justify-around items-center px-4 pt-2 pb-4 shadow-[0_-4px_10px_rgba(0,0,0,0.05)] z-[50] nav-transition ${showBottomNav ? '' : 'nav-hidden'}`}>
+                        <button onClick={() => setActiveTab('score')} className={`flex flex-col items-center p-2 transition-all ${activeTab === 'score' ? 'text-blue-600 scale-105' : 'text-slate-400'}`}>
                             <Icon name="score" />
-                            <span className="text-[10px] font-bold mt-1 uppercase">ป้อนคะแนน</span>
+                            <span className="text-[9px] font-bold mt-1 uppercase tracking-tighter">ป้อนคะแนน</span>
                         </button>
-                        <button onClick={() => setActiveTab('colors')} className={`flex flex-col items-center p-2 transition-all ${activeTab === 'colors' ? 'text-blue-600 scale-110' : 'text-slate-400'}`}>
+                        <button onClick={() => setActiveTab('colors')} className={`flex flex-col items-center p-2 transition-all ${activeTab === 'colors' ? 'text-blue-600 scale-105' : 'text-slate-400'}`}>
                             <Icon name="colors" />
-                            <span className="text-[10px] font-bold mt-1 uppercase">สีพรรค</span>
+                            <span className="text-[9px] font-bold mt-1 uppercase tracking-tighter">สีพรรค</span>
                         </button>
-                        <button onClick={() => setActiveTab('settings')} className={`flex flex-col items-center p-2 transition-all ${activeTab === 'settings' ? 'text-blue-600 scale-110' : 'text-slate-400'}`}>
+                        <button onClick={() => setActiveTab('settings')} className={`flex flex-col items-center p-2 transition-all ${activeTab === 'settings' ? 'text-blue-600 scale-105' : 'text-slate-400'}`}>
                             <Icon name="settings" />
-                            <span className="text-[10px] font-bold mt-1 uppercase">ตั้งค่า</span>
+                            <span className="text-[9px] font-bold mt-1 uppercase tracking-tighter">ตั้งค่า</span>
                         </button>
                     </nav>
 
                     {/* Feedback Toast */}
                     {isSaving && (
-                        <div className="fixed top-6 left-1/2 -translate-x-1/2 bg-green-500 text-white px-6 py-2 rounded-full shadow-2xl z-[100] font-black text-xs animate-bounce border-2 border-white/20">
-                            บันทึกเขต {selectedDistrict} เรียบร้อย!
+                        <div className="fixed top-24 left-1/2 -translate-x-1/2 bg-green-500 text-white px-6 py-2 rounded-full shadow-2xl z-[100] font-black text-[10px] animate-bounce border-2 border-white/20 uppercase tracking-widest">
+                            Saved!
                         </div>
                     )}
                 </div>

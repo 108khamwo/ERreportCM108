@@ -234,35 +234,102 @@
                 setData(newData);
             };
 
-            // Reset Logic (With Read-Merge-Write)
-            const confirmResetDistrict = async () => {
-                if (!resetTarget) return;
-                setResetTarget(null); // Close modal first
+            // *** FIXED SAVE LOGIC V.3.0: Read-Merge-Write ***
+            // This function fetches the LATEST data from server, merges the local changes for the specific district,
+            // and writes it back. This prevents overwriting other districts edited by other admins.
+            const saveData = async (distId = null, overrideData = null) => {
+                // Use overrideData if provided (for instant actions like delete/reset), otherwise use current local data
+                const dataToSave = overrideData || data;
                 
+                if (!dataToSave) return;
+                
+                if (isSaving) return;
+                setIsSaving(true);
+                setSaveSuccess(false);
+
                 try {
                     const docRef = db.collection('election_data').doc('chiangmai_live');
-                    const serverSnap = await docRef.get();
-                    if (!serverSnap.exists) return;
-                    const serverData = serverSnap.data();
-
-                    const targetDistIndex = serverData.districts.findIndex(d => d.id === resetTarget);
-                    if (targetDistIndex > -1) {
-                        const updatedCandidates = serverData.districts[targetDistIndex].candidates.map(c => ({...c, score: 0}));
-                        const updatedDistrict = { ...serverData.districts[targetDistIndex], candidates: updatedCandidates, progress: 0 };
-                        
-                        const newDistricts = [...serverData.districts];
-                        newDistricts[targetDistIndex] = updatedDistrict;
-
-                        await docRef.update({ districts: newDistricts });
-                        
-                        // Local update for immediate feedback (though snapshot will also update it)
-                        const newData = { ...data };
-                        const dIdx = newData.districts.findIndex(d => d.id === resetTarget);
-                        newData.districts[dIdx].candidates.forEach(c => c.score = 0);
-                        newData.districts[dIdx].progress = 0;
-                        setData(newData);
+                    
+                    // 1. Fetch latest server data
+                    const docSnap = await docRef.get();
+                    if (!docSnap.exists) {
+                         // Fallback if doc doesn't exist (unlikely)
+                         await docRef.set(dataToSave);
+                         return;
                     }
-                } catch(e) { alert("รีเซ็ตไม่สำเร็จ: " + e.message); }
+                    const serverData = docSnap.data();
+                    let updatePayload = {};
+
+                    if (distId) {
+                        // --- Saving Specific District (Safe Merge) ---
+                        const now = new Date(); 
+                        const timeStr = `${now.getHours().toString().padStart(2,'0')}:${now.getMinutes().toString().padStart(2,'0')}`; 
+                        
+                        // Get the fresh district array from SERVER
+                        const currentDistricts = serverData.districts || [];
+                        const districtIndex = currentDistricts.findIndex(d => d.id === distId);
+                        
+                        // Get OUR updated district data (from local state or override)
+                        const localDistData = dataToSave.districts.find(d => d.id === distId);
+
+                        if (districtIndex !== -1 && localDistData) {
+                            // Prepare updated district object
+                            const distToSave = { ...localDistData, lastUpdated: timeStr };
+
+                            // Update ONLY this specific index in the server's array
+                            currentDistricts[districtIndex] = distToSave;
+
+                            // Payload is the array with ONE updated item, rest are preserved from server
+                            updatePayload = { districts: currentDistricts };
+                            
+                            // Update local timestamp so UI reflects it immediately
+                            if (!overrideData) {
+                                 setData(prev => ({
+                                    ...prev,
+                                    districts: prev.districts.map(d => d.id === distId ? distToSave : d)
+                                }));
+                            }
+                        }
+                    } else {
+                        // --- Saving Global Settings ---
+                        // Update only settings & colors fields, DO NOT touch districts
+                        updatePayload = {
+                            settings: dataToSave.settings,
+                            partyColors: dataToSave.partyColors
+                        };
+                    }
+
+                    // 2. Write back the safely merged payload
+                    await docRef.update(updatePayload);
+
+                    setSaveSuccess(true);
+                    setTimeout(() => setSaveSuccess(false), 2000); 
+                } 
+                catch(e) { 
+                    console.error(e);
+                    alert("บันทึกไม่สำเร็จ: " + e.message); 
+                } finally {
+                    setIsSaving(false);
+                }
+            };
+
+            // Reset Logic (Uses saveData for safe write)
+            const confirmResetDistrict = () => {
+                if (!resetTarget) return;
+                const newData = JSON.parse(JSON.stringify(data)); // Deep clone
+                const dIdx = newData.districts.findIndex(d => d.id === resetTarget);
+                
+                if (dIdx !== -1) {
+                    newData.districts[dIdx].candidates.forEach(c => c.score = 0);
+                    newData.districts[dIdx].progress = 0;
+                    
+                    // Update Local State UI
+                    setData(newData);
+                    setResetTarget(null); // Close modal
+                    
+                    // Push to Server Safely
+                    saveData(resetTarget, newData);
+                }
             };
 
             const addCandidate = () => {
@@ -273,67 +340,22 @@
                 setData(newData);
             };
 
-            // Confirm Delete Logic (Locally, will be saved on "Save")
+            // Delete Logic (Uses saveData for safe write)
             const confirmDeleteCandidate = () => {
                 if (deleteTarget) {
-                    const newData = { ...data };
+                    const newData = JSON.parse(JSON.stringify(data)); // Deep clone
                     const district = newData.districts.find(d => d.id === selectedDistrict);
-                    district.candidates.splice(deleteTarget.index, 1);
-                    setData(newData);
-                    setDeleteTarget(null);
-                }
-            };
-
-            // *** FIXED SAFE SAVE LOGIC (Read-Merge-Write) ***
-            const saveData = async (targetDistrictId = null) => {
-                if (isSaving) return;
-                setIsSaving(true);
-                setSaveSuccess(false);
-
-                try {
-                    const docRef = db.collection('election_data').doc('chiangmai_live');
                     
-                    // 1. Fetch latest server data to prevent overwrites
-                    const serverSnap = await docRef.get();
-                    if (!serverSnap.exists) throw new Error("Document not found");
-                    const serverData = serverSnap.data();
-
-                    if (targetDistrictId) {
-                        // --- Saving a Specific District (From Score Tab) ---
-                        const now = new Date();
-                        const timeStr = now.toLocaleTimeString('th-TH', { hour: '2-digit', minute: '2-digit' });
+                    if (district) {
+                        district.candidates.splice(deleteTarget.index, 1);
                         
-                        // Get current district data from LOCAL state
-                        const localDist = data.districts.find(d => d.id === targetDistrictId);
-                        const distToSave = { ...localDist, lastUpdated: timeStr };
-
-                        // MERGE: Replace only the specific district in the SERVER data
-                        const newDistricts = serverData.districts.map(d => 
-                            d.id === targetDistrictId ? distToSave : d
-                        );
-
-                        await docRef.update({ districts: newDistricts });
-
-                        // Update local state timestamp
-                        setData(prev => ({
-                            ...prev,
-                            districts: prev.districts.map(d => d.id === targetDistrictId ? distToSave : d)
-                        }));
-                    } else {
-                        // --- Saving Global Settings (From Settings/Colors Tab) ---
-                        await docRef.update({
-                            settings: data.settings,
-                            partyColors: data.partyColors
-                        });
+                        // Update Local State UI
+                        setData(newData);
+                        setDeleteTarget(null); // Close modal
+                        
+                        // Push to Server Safely
+                        saveData(selectedDistrict, newData);
                     }
-
-                    setSaveSuccess(true);
-                    setTimeout(() => setSaveSuccess(false), 2000);
-                } catch (e) {
-                    console.error(e);
-                    alert("บันทึกไม่สำเร็จ: " + e.message);
-                } finally {
-                    setIsSaving(false);
                 }
             };
 
@@ -474,11 +496,11 @@
                                 <div className="bg-white p-4 rounded-2xl shadow-sm border border-blue-100 space-y-3">
                                     <div className="flex items-center gap-2 text-blue-600"><Icon name="monitor" className="w-4 h-4" /><h3 className="font-bold text-xs uppercase tracking-wide">หน้าจอหลัก</h3></div>
                                     <div className="flex gap-2">
-                                        <button onClick={() => setData({...data, settings: {...data.settings, displayMode: 'auto'}})} className={`flex-1 py-2.5 rounded-xl font-bold text-[10px] transition-all uppercase border ${data.settings.displayMode === 'auto' ? 'bg-blue-600 text-white border-blue-600' : 'bg-slate-50 text-slate-400 border-slate-100'}`}>วนลูป</button>
-                                        <button onClick={() => setData({...data, settings: {...data.settings, displayMode: 'fixed'}})} className={`flex-1 py-2.5 rounded-xl font-bold text-[10px] transition-all uppercase border ${data.settings.displayMode === 'fixed' ? 'bg-indigo-600 text-white border-indigo-600' : 'bg-slate-50 text-slate-400 border-slate-100'}`}>เจาะจง</button>
+                                        <button onClick={() => saveData(null, {...data, settings: {...data.settings, displayMode: 'auto'}})} className={`flex-1 py-2.5 rounded-xl font-bold text-[10px] transition-all uppercase border ${data.settings.displayMode === 'auto' ? 'bg-blue-600 text-white border-blue-600' : 'bg-slate-50 text-slate-400 border-slate-100'}`}>วนลูป</button>
+                                        <button onClick={() => saveData(null, {...data, settings: {...data.settings, displayMode: 'fixed'}})} className={`flex-1 py-2.5 rounded-xl font-bold text-[10px] transition-all uppercase border ${data.settings.displayMode === 'fixed' ? 'bg-indigo-600 text-white border-indigo-600' : 'bg-slate-50 text-slate-400 border-slate-100'}`}>เจาะจง</button>
                                     </div>
                                     {data.settings.displayMode === 'fixed' && (
-                                        <select value={data.settings.activeSlide} onChange={(e) => setData({...data, settings: {...data.settings, activeSlide: parseInt(e.target.value)}})} className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 font-bold text-xs outline-none focus:border-indigo-400">{data.districts.map((d, i) => (<option key={i} value={i}>{d.name}</option>))}<option value="10">หน้าภาพรวม</option></select>
+                                        <select value={data.settings.activeSlide} onChange={(e) => saveData(null, {...data, settings: {...data.settings, activeSlide: parseInt(e.target.value)}})} className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 font-bold text-xs outline-none focus:border-indigo-400">{data.districts.map((d, i) => (<option key={i} value={i}>{d.name}</option>))}<option value="10">หน้าภาพรวม</option></select>
                                     )}
                                 </div>
                                 <div className="space-y-3">

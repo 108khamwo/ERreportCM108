@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Admin - Election Reporter Mobile (Secure v2.3)</title>
+    <title>Admin - Election Reporter Mobile (Safe Sync V.3.0)</title>
     
     <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
     <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
@@ -146,7 +146,7 @@
             );
         }
 
-        // --- Custom Confirm Modal (Reusable) ---
+        // --- Custom Confirm Modal ---
         function ConfirmModal({ isOpen, onClose, onConfirm, title, message, type = 'danger' }) {
             if (!isOpen) return null;
             const isDanger = type === 'danger';
@@ -177,7 +177,7 @@
             const [activeTab, setActiveTab] = useState('score');
             const [selectedDistrict, setSelectedDistrict] = useState(1);
             const [isSaving, setIsSaving] = useState(false);
-            const [saveSuccess, setSaveSuccess] = useState(false); // New state for success check
+            const [saveSuccess, setSaveSuccess] = useState(false);
             const [status, setStatus] = useState('connecting');
             const [showBottomNav, setShowBottomNav] = useState(false);
             
@@ -201,6 +201,7 @@
                         const unsubscribe = docRef.onSnapshot((doc) => {
                             if (doc.exists) {
                                 const fetchedData = doc.data();
+                                // Ensure progress field exists
                                 if (!fetchedData.districts[0].progress) {
                                     fetchedData.districts = fetchedData.districts.map(d => ({...d, progress: d.progress || 0}));
                                 }
@@ -233,15 +234,35 @@
                 setData(newData);
             };
 
-            // Reset Logic (Now triggered by Modal)
-            const confirmResetDistrict = () => {
+            // Reset Logic (With Read-Merge-Write)
+            const confirmResetDistrict = async () => {
                 if (!resetTarget) return;
-                const newData = { ...data };
-                const district = newData.districts.find(d => d.id === resetTarget);
-                district.candidates.forEach(c => c.score = 0);
-                district.progress = 0;
-                setData(newData);
-                setResetTarget(null);
+                setResetTarget(null); // Close modal first
+                
+                try {
+                    const docRef = db.collection('election_data').doc('chiangmai_live');
+                    const serverSnap = await docRef.get();
+                    if (!serverSnap.exists) return;
+                    const serverData = serverSnap.data();
+
+                    const targetDistIndex = serverData.districts.findIndex(d => d.id === resetTarget);
+                    if (targetDistIndex > -1) {
+                        const updatedCandidates = serverData.districts[targetDistIndex].candidates.map(c => ({...c, score: 0}));
+                        const updatedDistrict = { ...serverData.districts[targetDistIndex], candidates: updatedCandidates, progress: 0 };
+                        
+                        const newDistricts = [...serverData.districts];
+                        newDistricts[targetDistIndex] = updatedDistrict;
+
+                        await docRef.update({ districts: newDistricts });
+                        
+                        // Local update for immediate feedback (though snapshot will also update it)
+                        const newData = { ...data };
+                        const dIdx = newData.districts.findIndex(d => d.id === resetTarget);
+                        newData.districts[dIdx].candidates.forEach(c => c.score = 0);
+                        newData.districts[dIdx].progress = 0;
+                        setData(newData);
+                    }
+                } catch(e) { alert("รีเซ็ตไม่สำเร็จ: " + e.message); }
             };
 
             const addCandidate = () => {
@@ -252,7 +273,7 @@
                 setData(newData);
             };
 
-            // Confirm Delete Logic
+            // Confirm Delete Logic (Locally, will be saved on "Save")
             const confirmDeleteCandidate = () => {
                 if (deleteTarget) {
                     const newData = { ...data };
@@ -263,24 +284,56 @@
                 }
             };
 
-            const saveCurrentDistrict = async () => {
+            // *** FIXED SAFE SAVE LOGIC (Read-Merge-Write) ***
+            const saveData = async (targetDistrictId = null) => {
                 if (isSaving) return;
                 setIsSaving(true);
-                setSaveSuccess(false); // Reset success state
-                
-                const now = new Date();
-                const timeStr = now.toLocaleTimeString('th-TH', { hour: '2-digit', minute: '2-digit' });
-                const newData = { ...data };
-                newData.districts = newData.districts.map(d => d.id === selectedDistrict ? { ...d, lastUpdated: timeStr } : d);
+                setSaveSuccess(false);
 
                 try {
-                    await db.collection('election_data').doc('chiangmai_live').set(newData);
-                    setIsSaving(false);
-                    setSaveSuccess(true); // Show success check
-                    setTimeout(() => setSaveSuccess(false), 2000); // Hide after 2 seconds
+                    const docRef = db.collection('election_data').doc('chiangmai_live');
+                    
+                    // 1. Fetch latest server data to prevent overwrites
+                    const serverSnap = await docRef.get();
+                    if (!serverSnap.exists) throw new Error("Document not found");
+                    const serverData = serverSnap.data();
+
+                    if (targetDistrictId) {
+                        // --- Saving a Specific District (From Score Tab) ---
+                        const now = new Date();
+                        const timeStr = now.toLocaleTimeString('th-TH', { hour: '2-digit', minute: '2-digit' });
+                        
+                        // Get current district data from LOCAL state
+                        const localDist = data.districts.find(d => d.id === targetDistrictId);
+                        const distToSave = { ...localDist, lastUpdated: timeStr };
+
+                        // MERGE: Replace only the specific district in the SERVER data
+                        const newDistricts = serverData.districts.map(d => 
+                            d.id === targetDistrictId ? distToSave : d
+                        );
+
+                        await docRef.update({ districts: newDistricts });
+
+                        // Update local state timestamp
+                        setData(prev => ({
+                            ...prev,
+                            districts: prev.districts.map(d => d.id === targetDistrictId ? distToSave : d)
+                        }));
+                    } else {
+                        // --- Saving Global Settings (From Settings/Colors Tab) ---
+                        await docRef.update({
+                            settings: data.settings,
+                            partyColors: data.partyColors
+                        });
+                    }
+
+                    setSaveSuccess(true);
+                    setTimeout(() => setSaveSuccess(false), 2000);
                 } catch (e) {
+                    console.error(e);
+                    alert("บันทึกไม่สำเร็จ: " + e.message);
+                } finally {
                     setIsSaving(false);
-                    alert("บันทึกไม่สำเร็จ");
                 }
             };
 
@@ -365,7 +418,7 @@
                                             
                                             {/* Save Button with Success State */}
                                             <button 
-                                                onClick={saveCurrentDistrict} 
+                                                onClick={() => saveData(selectedDistrict)} 
                                                 disabled={isSaving || saveSuccess}
                                                 className={`h-9 px-3 rounded-full text-white flex items-center justify-center shadow-md active:scale-90 transition-all ${saveSuccess ? 'bg-green-500 w-auto' : isSaving ? 'bg-gray-400 w-9' : 'bg-green-600 w-9'}`}
                                             >
@@ -389,6 +442,7 @@
                                                     <img src={c.image || `https://placehold.co/100x133/0f172a/FFFFFF?text=${c.no}`} alt={c.name} className="candidate-img border border-slate-100 shadow-sm"/>
                                                     <div className="absolute -top-1 -left-1 w-5 h-5 bg-slate-900 text-white text-[9px] font-black rounded-md flex items-center justify-center shadow-lg border border-white">{c.no}</div>
                                                 </div>
+                                                {/* Delete Button (Trash) below Image */}
                                                 <button 
                                                     onClick={() => setDeleteTarget({ index, name: c.name })} 
                                                     className="text-slate-300 hover:text-red-500 p-1 active:scale-90 transition-transform"
@@ -431,7 +485,8 @@
                                     <div className="space-y-1"><label className="text-[10px] font-bold text-slate-400 uppercase ml-1">ชื่อรายการ</label><input type="text" value={data.settings.title} onChange={(e) => setData({...data, settings: {...data.settings, title: e.target.value}})} className="w-full bg-white border border-slate-200 rounded-xl px-3 py-2.5 font-bold text-xs outline-none focus:border-blue-400" /></div>
                                     <div className="space-y-1"><label className="text-[10px] font-bold text-slate-400 uppercase ml-1">ข้อความวิ่ง</label><textarea rows="2" value={data.settings.footer} onChange={(e) => setData({...data, settings: {...data.settings, footer: e.target.value}})} className="w-full bg-white border border-slate-200 rounded-xl px-3 py-2.5 font-bold text-xs outline-none focus:border-blue-400 resize-none" /></div>
                                 </div>
-                                <button onClick={saveCurrentDistrict} className="w-full bg-slate-900 text-white py-3.5 rounded-xl font-black text-xs shadow-lg active:scale-95 transition-all">บันทึกการตั้งค่า</button>
+                                {/* Save Global Settings */}
+                                <button onClick={() => saveData()} className="w-full bg-slate-900 text-white py-3.5 rounded-xl font-black text-xs shadow-lg active:scale-95 transition-all">บันทึกการตั้งค่า</button>
                                 <button onClick={handleLogout} className="w-full bg-white text-red-500 border border-red-100 py-3 rounded-xl font-bold text-xs flex items-center justify-center gap-2 active:bg-red-50"><Icon name="logout" className="w-4 h-4"/> ออกจากระบบ</button>
                             </div>
                         )}
@@ -440,14 +495,16 @@
                             <div className="p-5 animate-[fadeIn_0.3s]">
                                 <h2 className="text-lg font-black text-slate-800 uppercase tracking-tight mb-4">สีพรรคการเมือง</h2>
                                 <div className="grid grid-cols-1 gap-2">{Object.entries(data.partyColors || {}).map(([party, color]) => (<div key={party} className="bg-white p-2.5 rounded-xl border flex items-center justify-between shadow-sm border-slate-100"><span className="font-bold text-slate-700 text-xs">{party}</span><div className="flex items-center gap-2"><span className="text-[9px] font-mono font-bold text-slate-300 uppercase">{color}</span><input type="color" value={color} onChange={(e) => setData({...data, partyColors: {...data.partyColors, [party]: e.target.value}})} className="w-8 h-8 border rounded-lg bg-transparent cursor-pointer" /></div></div>))}</div>
-                                <button onClick={saveCurrentDistrict} className="w-full mt-6 bg-slate-900 text-white py-3.5 rounded-xl font-black text-xs shadow-lg active:scale-95 transition-all">บันทึกสีพรรค</button>
+                                {/* Save Global Settings (Colors) */}
+                                <button onClick={() => saveData()} className="w-full mt-6 bg-slate-900 text-white py-3.5 rounded-xl font-black text-xs shadow-lg active:scale-95 transition-all">บันทึกสีพรรค</button>
                             </div>
                         )}
                     </main>
 
                     {activeTab === 'score' && (
                         <div className={`fixed transition-all duration-300 z-[60] right-4 ${showBottomNav ? 'bottom-20' : 'bottom-6'}`}>
-                            <button onClick={saveCurrentDistrict} disabled={isSaving} className={`w-12 h-12 rounded-full flex items-center justify-center shadow-2xl transition-all active:scale-90 ${isSaving ? 'bg-slate-400' : 'bg-green-600 text-white'}`}><Icon name="save" /></button>
+                            {/* Save Specific District */}
+                            <button onClick={() => saveData(selectedDistrict)} disabled={isSaving} className={`w-12 h-12 rounded-full flex items-center justify-center shadow-2xl transition-all active:scale-90 ${isSaving ? 'bg-slate-400' : 'bg-green-600 text-white'}`}><Icon name="save" /></button>
                         </div>
                     )}
 
@@ -460,6 +517,8 @@
                         <button onClick={() => setActiveTab('colors')} className={`flex flex-col items-center p-2 transition-all ${activeTab === 'colors' ? 'text-blue-600 scale-105' : 'text-slate-400'}`}><Icon name="colors" className="w-5 h-5"/><span className="text-[9px] font-bold mt-0.5 uppercase tracking-tighter">สีพรรค</span></button>
                         <button onClick={() => setActiveTab('settings')} className={`flex flex-col items-center p-2 transition-all ${activeTab === 'settings' ? 'text-blue-600 scale-105' : 'text-slate-400'}`}><Icon name="settings" className="w-5 h-5"/><span className="text-[9px] font-bold mt-0.5 uppercase tracking-tighter">ตั้งค่า</span></button>
                     </nav>
+
+                    {isSaving && <div className="fixed top-24 left-1/2 -translate-x-1/2 bg-green-500 text-white px-6 py-2 rounded-full shadow-2xl z-[100] font-black text-[10px] animate-bounce border-2 border-white/20 uppercase tracking-widest">Saved!</div>}
                 </div>
             );
         };

@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ระบบรายงานผลเลือกตั้งเชียงใหม่ (Secure v10.2 Hotfix)</title>
+    <title>ระบบรายงานผลเลือกตั้งเชียงใหม่ (Secure v10.9 Final)</title>
     
     <!-- React & ReactDOM -->
     <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
@@ -187,7 +187,7 @@
         function LogoutIcon(p) { return <Icon {...p}><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></Icon>; }
         function PaletteIcon(p) { return <Icon {...p}><circle cx="13.5" cy="6.5" r=".5"></circle><circle cx="17.5" cy="10.5" r=".5"></circle><circle cx="8.5" cy="7.5" r=".5"></circle><circle cx="6.5" cy="12.5" r=".5"></circle><path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10c.926 0 1.648-.746 1.648-1.688 0-.437-.18-.835-.437-1.125-.29-.289-.438-.652-.438-1.125a1.64 1.64 0 0 1 1.668-1.668h1.996c3.051 0 5.555-2.503 5.555-5.554C21.965 6.012 17.461 2 12 2z"></path></Icon>; }
         function UsersIcon(p) { return <Icon {...p}><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></Icon>; }
-        function SettingsIcon(p) { return <Icon {...p}><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></Icon>; }
+        function SettingsIcon(p) { return <Icon {...p}><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></Icon>; }
         function ImageIconAdmin(p) { return <Icon {...p}><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></Icon>; }
         function GlobeIcon(p) { return <Icon {...p}><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></Icon>; }
         function PercentIcon(p) { return <Icon {...p}><line x1="19" y1="5" x2="5" y2="19"/><circle cx="6.5" cy="6.5" r="2.5"/><circle cx="17.5" cy="17.5" r="2.5"/></Icon>; }
@@ -379,25 +379,33 @@
             const deleteCandidate = (districtId, index) => {
                 const district = localData.districts.find(d => d.id === districtId);
                 const candidateName = district.candidates[index].name;
+                
                 if (window.confirm(`⚠️ คุณแน่ใจหรือไม่ว่าต้องการลบผู้สมัคร: ${candidateName}?`)) {
-                    setLocalData(prevData => {
-                        const newData = { ...prevData };
-                        const districtIndex = newData.districts.findIndex(d => d.id === districtId);
-                        newData.districts[districtIndex].candidates.splice(index, 1);
-                        return newData;
-                    });
+                    // Create deep clone for safety
+                    const newData = JSON.parse(JSON.stringify(localData));
+                    const dIdx = newData.districts.findIndex(d => d.id === districtId);
+                    
+                    if (dIdx !== -1) {
+                        newData.districts[dIdx].candidates.splice(index, 1);
+                        setLocalData(newData);
+                        // Auto-save the change using the NEW data
+                        saveData(districtId, newData);
+                    }
                 }
             };
 
             const resetDistrictScores = (districtId) => {
                 if (window.confirm(`🔄 คุณแน่ใจหรือไม่ว่าต้องการรีเซ็ตคะแนนทั้งหมดใน เขต ${districtId} เป็นศูนย์?`)) {
-                    setLocalData(prevData => {
-                        const newData = { ...prevData };
-                        const dIdx = newData.districts.findIndex(d => d.id === districtId);
+                    const newData = JSON.parse(JSON.stringify(localData));
+                    const dIdx = newData.districts.findIndex(d => d.id === districtId);
+                    
+                    if (dIdx !== -1) {
                         newData.districts[dIdx].candidates = newData.districts[dIdx].candidates.map(c => ({...c, score: 0}));
                         newData.districts[dIdx].progress = 0;
-                        return newData;
-                    });
+                        setLocalData(newData);
+                        // Auto-save the change using the NEW data
+                        saveData(districtId, newData);
+                    }
                 }
             };
 
@@ -430,7 +438,7 @@
                     try {
                         const importedData = JSON.parse(event.target.result);
                         setLocalData(importedData);
-                        getDocRef().set(importedData); // Full restore needs set
+                        saveData(null, importedData); // Use new save signature
                         alert("กู้คืนข้อมูลสำเร็จ");
                     } catch (err) { alert("ไฟล์ไม่ถูกต้อง"); }
                 };
@@ -652,45 +660,66 @@
             };
 
             // *** FIXED SAVE LOGIC: READ-MERGE-WRITE to prevent race conditions ***
-            const saveData = async (distId = null) => {
-                if (!localData) return; 
+            const saveData = async (distId = null, overrideData = null) => {
+                // Use overrideData if provided (for instant delete/reset), otherwise use current localData
+                const dataToSave = overrideData || localData;
+                
+                if (!dataToSave) return; 
                 try {
                     // 1. Get latest data from server first (to avoid overwriting others)
-                    const serverSnap = await getDocRef().get();
-                    if (!serverSnap.exists) return;
-                    const serverData = serverSnap.data();
+                    const docRef = getDocRef();
+                    const docSnap = await docRef.get();
+                    
+                    if (!docSnap.exists) {
+                        // Edge case: data missing
+                         await docRef.set(dataToSave);
+                         return;
+                    }
+                    const serverData = docSnap.data();
+
+                    let updatePayload = {};
 
                     if (distId) {
-                        // --- Saving Specific District ---
-                        const now = new Date(); 
-                        const timeStr = `${now.getHours().toString().padStart(2,'0')}:${now.getMinutes().toString().padStart(2,'0')}`; 
+                        // --- Saving Specific District: MERGE Logic ---
+                        // Get the fresh district array from server
+                        const currentDistricts = serverData.districts || [];
+                        const districtIndex = currentDistricts.findIndex(d => d.id === distId);
                         
-                        // Get the updated district from LOCAL state
-                        const localDistData = localData.districts.find(d => d.id === distId);
-                        const distToSave = { ...localDistData, lastUpdated: timeStr };
+                        // Get OUR local version of this district
+                        const localDistData = dataToSave.districts.find(d => d.id === distId);
 
-                        // MERGE: Replace only the specific district in the SERVER data
-                        const newDistricts = serverData.districts.map(d => 
-                            d.id === distId ? distToSave : d
-                        );
+                        if (districtIndex !== -1 && localDistData) {
+                            const now = new Date(); 
+                            const timeStr = `${now.getHours().toString().padStart(2,'0')}:${now.getMinutes().toString().padStart(2,'0')}`; 
+                            
+                            // Create updated district object
+                            const distToSave = { ...localDistData, lastUpdated: timeStr };
 
-                        // Update only 'districts' field
-                        await getDocRef().update({ districts: newDistricts });
-                        
-                        // Update local state timestamp to reflect save
-                         setLocalData(prev => ({
-                            ...prev,
-                            districts: prev.districts.map(d => d.id === distId ? distToSave : d)
-                        }));
+                            // Update ONLY this index in the server's array
+                            currentDistricts[districtIndex] = distToSave;
 
+                            // Payload is the array with ONE updated item, rest are from server
+                            updatePayload = { districts: currentDistricts };
+                            
+                            // Update local timestamp so UI reflects it immediately
+                            if (!overrideData) { // If it's a manual save, update local timestamp
+                                 setLocalData(prev => ({
+                                    ...prev,
+                                    districts: prev.districts.map(d => d.id === distId ? distToSave : d)
+                                }));
+                            }
+                        }
                     } else {
                         // --- Saving Global Settings ---
-                        // Update only settings & colors fields, leave districts alone
-                        await getDocRef().update({
-                            settings: localData.settings,
-                            partyColors: localData.partyColors
-                        });
+                        // Update only settings & colors fields, DO NOT touch districts
+                        updatePayload = {
+                            settings: dataToSave.settings,
+                            partyColors: dataToSave.partyColors
+                        };
                     }
+
+                    // 2. Write back the merged payload
+                    await docRef.update(updatePayload);
 
                     setSaveTriggered(true); setTimeout(() => setSaveTriggered(false), 2000); 
                 } 

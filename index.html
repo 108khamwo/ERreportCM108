@@ -47,8 +47,8 @@
 
     <!-- Main Content -->
     <main class="flex-grow flex items-center justify-center p-6">
-        <!-- ปรับ grid-cols-2 เป็น grid-cols-3 สำหรับหน้าจอใหญ่ -->
-        <div class="max-w-7xl w-full grid grid-cols-1 md:grid-cols-3 gap-6">
+        <!-- ปรับ grid เป็น 4 คอลัมน์บนจอใหญ่ (lg:grid-cols-4) และ 2 คอลัมน์บนจอปกติ (md:grid-cols-2) -->
+        <div class="max-w-7xl w-full grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
             
             <!-- 1. Web System Card -->
             <div class="glass-card rounded-3xl p-8 flex flex-col items-center text-center border-t-4 border-blue-500">
@@ -82,7 +82,23 @@
                 </a>
             </div>
 
-            <!-- 3. Drive Storage Card (NEW) -->
+            <!-- 3. ERreportCM108V.2 (NEW) -->
+            <div class="glass-card rounded-3xl p-8 flex flex-col items-center text-center border-t-4 border-purple-500">
+                <div class="w-20 h-20 bg-purple-100 text-purple-600 rounded-full flex items-center justify-center mb-6">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
+                    </svg>
+                </div>
+                <h2 class="text-xl font-bold text-gray-800 mb-2 uppercase">ERreport V.2</h2>
+                <p class="text-gray-600 mb-8 text-sm leading-relaxed h-12">
+                    ระบบรายงานผลคะแนนเวอร์ชัน 2 อัปเกรดประสิทธิภาพและการแสดงผล
+                </p>
+                <a href="./ERreportCM108V.2/" class="w-full bg-purple-600 hover:bg-purple-700 text-white font-semibold py-4 px-4 rounded-2xl transition duration-300 shadow-lg shadow-purple-200 flex items-center justify-center space-x-2">
+                    <span>เข้าสู่ระบบ V.2</span>
+                </a>
+            </div>
+
+            <!-- 4. Drive Storage Card -->
             <div class="glass-card rounded-3xl p-8 flex flex-col items-center text-center border-t-4 border-emerald-500">
                 <div class="w-20 h-20 bg-emerald-100 text-emerald-600 rounded-full flex items-center justify-center mb-6">
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -93,7 +109,7 @@
                 <p class="text-gray-600 mb-8 text-sm leading-relaxed h-12">
                     คลังเก็บข้อมูลเอกสาร แบบฟอร์ม และสื่อต่างๆ ที่เกี่ยวข้อง
                 </p>
-                <a href="https://drive.google.com/drive/folders/1on6_rB-nDp61FUCvj1cuh2i57Ph5TWC_?usp=drive_link" 
+                <a href="https://drive.google.com/drive/folders/1U5W3Zsa6E8AcQ7dXhFx3klcrvg-U0Iqa" 
                    target="_blank" 
                    rel="noopener noreferrer" 
                    class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-semibold py-4 px-4 rounded-2xl transition duration-300 shadow-lg shadow-emerald-200 flex items-center justify-center space-x-2">
@@ -113,7 +129,7 @@
         <div class="mt-4 flex justify-center space-x-6 text-xs font-medium text-gray-400">
             <span>Server Status: Online</span>
             <span>•</span>
-            <span>Version 1.1.0</span>
+            <span>Version 1.2.0</span>
         </div>
     </footer>
 
@@ -124,5 +140,3 @@
     </script>
 </body>
 </html>
-
-

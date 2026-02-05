@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Admin - Election Reporter Mobile (Safe Sync V.3.0)</title>
+    <title>Admin - Election Reporter Mobile (Multi-Admin Fix V.3.1)</title>
     
     <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
     <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
@@ -181,9 +181,21 @@
             const [status, setStatus] = useState('connecting');
             const [showBottomNav, setShowBottomNav] = useState(false);
             
+            // Refs for tracking current selections in listeners
+            const selectedDistrictRef = useRef(1);
+            const activeTabRef = useRef('score');
+
             // Modal States
             const [deleteTarget, setDeleteTarget] = useState(null);
             const [resetTarget, setResetTarget] = useState(null);
+
+            useEffect(() => {
+                selectedDistrictRef.current = selectedDistrict;
+            }, [selectedDistrict]);
+
+            useEffect(() => {
+                activeTabRef.current = activeTab;
+            }, [activeTab]);
 
             useEffect(() => {
                 const unsubscribe = auth.onAuthStateChanged((u) => {
@@ -200,12 +212,40 @@
                         const docRef = db.collection('election_data').doc('chiangmai_live');
                         const unsubscribe = docRef.onSnapshot((doc) => {
                             if (doc.exists) {
-                                const fetchedData = doc.data();
+                                const serverData = doc.data();
                                 // Ensure progress field exists
-                                if (!fetchedData.districts[0].progress) {
-                                    fetchedData.districts = fetchedData.districts.map(d => ({...d, progress: d.progress || 0}));
+                                if (!serverData.districts[0].progress) {
+                                    serverData.districts = serverData.districts.map(d => ({...d, progress: d.progress || 0}));
                                 }
-                                setData(fetchedData);
+
+                                // *** SMART MERGE LOGIC (CRITICAL FIX) ***
+                                // When data comes from server, we update everything EXCEPT the district currently being edited.
+                                setData(prevData => {
+                                    if (!prevData) return serverData;
+
+                                    const currentTab = activeTabRef.current;
+                                    const currentDistId = selectedDistrictRef.current;
+
+                                    // If we are in 'score' tab, we want to PRESERVE the local state of the currently selected district
+                                    if (currentTab === 'score') {
+                                        const mergedData = { ...serverData };
+                                        
+                                        // Find the district currently being viewed in local state
+                                        const localActiveDistrict = prevData.districts.find(d => d.id === currentDistId);
+                                        const serverDistIndex = mergedData.districts.findIndex(d => d.id === currentDistId);
+
+                                        if (localActiveDistrict && serverDistIndex !== -1) {
+                                            // Keep the LOCAL version of the active district (so typing isn't overwritten)
+                                            mergedData.districts[serverDistIndex] = localActiveDistrict;
+                                        }
+                                        return mergedData;
+                                    } 
+                                    
+                                    // If in other tabs, generally safe to take server data, but maybe preserve settings?
+                                    // For now, let's trust server data for non-active-editing scenarios
+                                    return serverData;
+                                });
+
                                 setStatus('online');
                             } else {
                                 docRef.set(INITIAL_DATA);
@@ -234,13 +274,9 @@
                 setData(newData);
             };
 
-            // *** FIXED SAVE LOGIC V.3.0: Read-Merge-Write ***
-            // This function fetches the LATEST data from server, merges the local changes for the specific district,
-            // and writes it back. This prevents overwriting other districts edited by other admins.
+            // *** TRANSACTION SAVE LOGIC (CRITICAL FIX) ***
             const saveData = async (distId = null, overrideData = null) => {
-                // Use overrideData if provided (for instant actions like delete/reset), otherwise use current local data
                 const dataToSave = overrideData || data;
-                
                 if (!dataToSave) return;
                 
                 if (isSaving) return;
@@ -250,85 +286,80 @@
                 try {
                     const docRef = db.collection('election_data').doc('chiangmai_live');
                     
-                    // 1. Fetch latest server data
-                    const docSnap = await docRef.get();
-                    if (!docSnap.exists) {
-                         // Fallback if doc doesn't exist (unlikely)
-                         await docRef.set(dataToSave);
-                         return;
-                    }
-                    const serverData = docSnap.data();
-                    let updatePayload = {};
-
-                    if (distId) {
-                        // --- Saving Specific District (Safe Merge) ---
-                        const now = new Date(); 
-                        const timeStr = `${now.getHours().toString().padStart(2,'0')}:${now.getMinutes().toString().padStart(2,'0')}`; 
-                        
-                        // Get the fresh district array from SERVER
-                        const currentDistricts = serverData.districts || [];
-                        const districtIndex = currentDistricts.findIndex(d => d.id === distId);
-                        
-                        // Get OUR updated district data (from local state or override)
-                        const localDistData = dataToSave.districts.find(d => d.id === distId);
-
-                        if (districtIndex !== -1 && localDistData) {
-                            // Prepare updated district object
-                            const distToSave = { ...localDistData, lastUpdated: timeStr };
-
-                            // Update ONLY this specific index in the server's array
-                            currentDistricts[districtIndex] = distToSave;
-
-                            // Payload is the array with ONE updated item, rest are preserved from server
-                            updatePayload = { districts: currentDistricts };
-                            
-                            // Update local timestamp so UI reflects it immediately
-                            if (!overrideData) {
-                                 setData(prev => ({
-                                    ...prev,
-                                    districts: prev.districts.map(d => d.id === distId ? distToSave : d)
-                                }));
-                            }
+                    await db.runTransaction(async (transaction) => {
+                        const docSnap = await transaction.get(docRef);
+                        if (!docSnap.exists) {
+                            throw "Document does not exist!";
                         }
-                    } else {
-                        // --- Saving Global Settings ---
-                        // Update only settings & colors fields, DO NOT touch districts
-                        updatePayload = {
-                            settings: dataToSave.settings,
-                            partyColors: dataToSave.partyColors
-                        };
-                    }
 
-                    // 2. Write back the safely merged payload
-                    await docRef.update(updatePayload);
+                        const serverData = docSnap.data();
+                        const now = new Date();
+                        const timeStr = `${now.getHours().toString().padStart(2,'0')}:${now.getMinutes().toString().padStart(2,'0')}`; 
+
+                        if (distId) {
+                            // --- Saving Specific District ---
+                            // 1. Get current districts from server
+                            const serverDistricts = serverData.districts || [];
+                            const distIndex = serverDistricts.findIndex(d => d.id === distId);
+                            
+                            // 2. Get local data for this district
+                            const localDistData = dataToSave.districts.find(d => d.id === distId);
+
+                            if (distIndex !== -1 && localDistData) {
+                                // 3. Prepare updated object
+                                const updatedDistrict = { ...localDistData, lastUpdated: timeStr };
+                                
+                                // 4. Modify ONLY this index in the server array
+                                serverDistricts[distIndex] = updatedDistrict;
+                                
+                                // 5. Update via Transaction
+                                transaction.update(docRef, { districts: serverDistricts });
+                            }
+                        } else {
+                            // --- Saving Global Settings ---
+                            transaction.update(docRef, {
+                                settings: dataToSave.settings,
+                                partyColors: dataToSave.partyColors
+                            });
+                        }
+                    });
+
+                    // Update Local State Timestamp (Optional, since snapshot will catch it, but good for instant feedback)
+                    if (distId && !overrideData) {
+                         const now = new Date();
+                         const timeStr = `${now.getHours().toString().padStart(2,'0')}:${now.getMinutes().toString().padStart(2,'0')}`; 
+                         setData(prev => ({
+                            ...prev,
+                            districts: prev.districts.map(d => d.id === distId ? { ...d, lastUpdated: timeStr } : d)
+                        }));
+                    }
 
                     setSaveSuccess(true);
                     setTimeout(() => setSaveSuccess(false), 2000); 
                 } 
                 catch(e) { 
-                    console.error(e);
-                    alert("บันทึกไม่สำเร็จ: " + e.message); 
+                    console.error("Transaction failed: ", e);
+                    alert("เกิดข้อผิดพลาดในการบันทึก (ข้อมูลอาจมีการเปลี่ยนแปลงจากที่อื่น กรุณาลองใหม่)"); 
                 } finally {
                     setIsSaving(false);
                 }
             };
 
-            // Reset Logic (Uses saveData for safe write)
+            // Reset Logic (Uses saveData)
             const confirmResetDistrict = () => {
                 if (!resetTarget) return;
-                const newData = JSON.parse(JSON.stringify(data)); // Deep clone
+                // Clone data to modify
+                const newData = JSON.parse(JSON.stringify(data)); 
                 const dIdx = newData.districts.findIndex(d => d.id === resetTarget);
                 
                 if (dIdx !== -1) {
                     newData.districts[dIdx].candidates.forEach(c => c.score = 0);
                     newData.districts[dIdx].progress = 0;
                     
-                    // Update Local State UI
-                    setData(newData);
-                    setResetTarget(null); // Close modal
+                    setData(newData); // Optimistic update
+                    setResetTarget(null);
                     
-                    // Push to Server Safely
-                    saveData(resetTarget, newData);
+                    saveData(resetTarget, newData); // Save to server
                 }
             };
 
@@ -340,21 +371,19 @@
                 setData(newData);
             };
 
-            // Delete Logic (Uses saveData for safe write)
             const confirmDeleteCandidate = () => {
                 if (deleteTarget) {
-                    const newData = JSON.parse(JSON.stringify(data)); // Deep clone
+                    const newData = JSON.parse(JSON.stringify(data));
                     const district = newData.districts.find(d => d.id === selectedDistrict);
-                    
                     if (district) {
                         district.candidates.splice(deleteTarget.index, 1);
+                        setData(newData); // Optimistic update
+                        setDeleteTarget(null);
                         
-                        // Update Local State UI
-                        setData(newData);
-                        setDeleteTarget(null); // Close modal
-                        
-                        // Push to Server Safely
-                        saveData(selectedDistrict, newData);
+                        // Note: Deleting usually requires saving to persist. 
+                        // In this UX, user likely expects delete to happen, but we can wait for manual save or save immediately.
+                        // Let's AUTO-SAVE on delete to be safe/consistent with reset.
+                        saveData(selectedDistrict, newData); 
                     }
                 }
             };

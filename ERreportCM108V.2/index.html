@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ระบบรายงานผลเลือกตั้งเชียงใหม่ (Secure v10.9 Final)</title>
+    <title>ระบบรายงานผลเลือกตั้งเชียงใหม่ (Secure v10.9 Final + Area Fix + NewTab)</title>
     
     <!-- React & ReactDOM -->
     <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
@@ -172,7 +172,7 @@
         // --- Constants ---
         const ALL_SLIDES = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
         const DEFAULT_PARTY_COLORS = { "วิชชั่นใหม่": "#14b8a6", "ประชาชน": "#ff7f00", "เศรษฐกิจ": "#f59e0b", "กล้าธรรม": "#8b5cf6", "ภูมิใจไทย": "#1e40af", "เพื่อไทย": "#dc2626", "ประชาธิปัตย์": "#3b82f6", "โอกาสใหม่": "#10b981", "รวมไทยสร้างชาติ": "#2563eb", "ไทยก้าวใหม่": "#6366f1", "รักชาติ": "#be123c", "เสรีรวมไทย": "#eab308", "ก้าวอิสระ": "#64748b", "พลังประชารัฐ": "#15803d", "ประชากรไทย": "#ec4899", "ปวงชนไทย": "#a855f7", "พลวัต": "#06b6d4", "เพื่อบ้านเมือง": "#f97316" };
-        const INITIAL_DATA = { settings: { title: "ผลการนับคะแนนเลือกตั้ง ส.ส. เชียงใหม่ 10 เขต (ไม่เป็นทางการ)", footer: "ข้อมูลผลคะแนนเลือกตั้งเป็นเพียงผลไม่เป็นทางการ", cycleTime: 10, marqueeSpeed: 20, marqueeDelay: 3, backgroundImage: "", displayMode: 'auto', activeSlide: 0, enabledSlides: ALL_SLIDES, showLightEffect: true, lightBrightness: 70, showPercentage: true }, partyColors: DEFAULT_PARTY_COLORS, districts: Array.from({length: 10}, (_, i) => ({ id: i + 1, name: `เขต ${i + 1}`, lastUpdated: null, progress: 0, candidates: Array.from({length: 12}, (_, j) => ({ no: j + 1, name: `ผู้สมัครคนที่ ${j + 1}`, party: Object.keys(DEFAULT_PARTY_COLORS)[j % Object.keys(DEFAULT_PARTY_COLORS).length], score: 0 })) })) };
+        const INITIAL_DATA = { settings: { title: "ผลการนับคะแนนเลือกตั้ง ส.ส. เชียงใหม่ 10 เขต (ไม่เป็นทางการ)", footer: "ข้อมูลผลคะแนนเลือกตั้งเป็นเพียงผลไม่เป็นทางการ", cycleTime: 10, marqueeSpeed: 20, marqueeDelay: 3, backgroundImage: "", displayMode: 'auto', activeSlide: 0, enabledSlides: ALL_SLIDES, showLightEffect: true, lightBrightness: 70, showPercentage: true }, partyColors: DEFAULT_PARTY_COLORS, districts: Array.from({length: 10}, (_, i) => ({ id: i + 1, name: `เขต ${i + 1}`, area: "", lastUpdated: null, progress: 0, candidates: Array.from({length: 12}, (_, j) => ({ no: j + 1, name: `ผู้สมัครคนที่ ${j + 1}`, party: Object.keys(DEFAULT_PARTY_COLORS)[j % Object.keys(DEFAULT_PARTY_COLORS).length], score: 0 })) })) };
 
         // --- Icons ---
         function Icon({ children, size = 24, className = "" }) { return <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}>{children}</svg>; }
@@ -301,7 +301,21 @@
                 <div className="flex-1 px-8 py-4 relative h-full flex flex-col pt-8 page-transition">
                     <div className="flex justify-between items-end mb-4 z-10 relative h-auto shrink-0 -mt-8">
                         <div>
-                            <h2 className="text-[3.1rem] font-bold text-white drop-shadow-md flex items-center text-shadow thai-text uppercase"><span className="px-4 py-1.5 rounded-lg mr-4 text-[1.9rem] shadow-lg text-white" style={{backgroundColor: getColor(sorted[0]?.party)}}>เชียงใหม่</span>{district.name}</h2>
+                            <h2 className="text-[3.1rem] font-bold text-white drop-shadow-md flex items-center text-shadow thai-text uppercase">
+                                <span className="px-4 py-1.5 rounded-lg mr-4 text-[1.9rem] shadow-lg text-white" style={{backgroundColor: getColor(sorted[0]?.party)}}>เชียงใหม่</span>
+                                {district.name}
+                                {/* ปรับปรุงส่วนแสดงรายชื่ออำเภอ: เล็กลง ตัวบาง ไม่แสดง () และขึ้นบรรทัดใหม่เมื่อเจอ | */}
+                                {district.area && (
+                                    <span className="ml-3 text-[0.85rem] font-light text-blue-100 opacity-90 leading-tight whitespace-pre-line shadow-none tracking-normal" style={{maxWidth: '400px', display: 'inline-block', verticalAlign: 'bottom', paddingBottom: '8px', textShadow: 'none'}}>
+                                        {district.area.split('|').map((item, index, arr) => (
+                                            <React.Fragment key={index}>
+                                                {item}
+                                                {index < arr.length - 1 && <br />}
+                                            </React.Fragment>
+                                        ))}
+                                    </span>
+                                )}
+                            </h2>
                             <div className="text-blue-200 text-xl flex items-center mt-0.5 font-medium ml-1"><div className={`w-3.5 h-3.5 rounded-full mr-2 ${district.lastUpdated ? 'bg-green-500 animate-pulse' : 'bg-gray-500'}`}></div>อัปเดตล่าสุด: {district.lastUpdated || "รอคะแนน"}</div>
                         </div>
                          {showPercentage && (
@@ -331,7 +345,7 @@
         }
 
         // --- Admin Panel (Updated with Delete & Reset Fixes) ---
-        function AdminPanel({ localData, setLocalData, handleScoreChange, handleSettingChange, saveData, handleCandidateInfoChange, handleImageChange, isOnlineMode, saveTriggered, handleBgUpload, setMode, setupError, handleProgressChange }) {
+        function AdminPanel({ localData, setLocalData, handleScoreChange, handleSettingChange, saveData, handleCandidateInfoChange, handleImageChange, isOnlineMode, saveTriggered, handleBgUpload, setMode, setupError, handleProgressChange, handleDistrictFieldChange }) {
             const [adminFilter, setAdminFilter] = useState('all'); const [imageModalData, setImageModalData] = useState(null); const [isPartyModalOpen, setIsPartyModalOpen] = useState(false); const [autoStatus, setAutoStatus] = useState('idle'); const bgInputRef = useRef(null);
             
             // --- FIX: Robust check for districts array ---
@@ -527,15 +541,27 @@
                             <div className="space-y-10 pb-60">{districts.filter(d => { if (adminFilter === '1-5') return d.id >= 1 && d.id <= 5; if (adminFilter === '6-10') return d.id >= 6 && d.id <= 10; return true; }).map((d) => (
                                 <div key={d.id} className="bg-white rounded-3xl border-2 shadow-md overflow-hidden border-slate-200">
                                     <div className="bg-slate-100/50 px-8 py-4 border-b-2 flex flex-wrap justify-between items-center gap-4">
-                                        <div className="flex flex-wrap items-center gap-4">
-                                            <h3 className="font-black text-2xl text-slate-700 uppercase">{d.name}</h3>
-                                            <div className="flex items-center gap-2 bg-cyan-50 px-3 py-1.5 rounded-xl border border-cyan-100">
-                                                <span className="text-[10px] font-black text-cyan-700 uppercase tracking-widest">นับแล้ว % :</span>
-                                                <input type="number" min="0" max="100" value={d.progress || 0} onChange={(e) => handleProgressChange(d.id, e.target.value)} onFocus={(e) => e.target.select()} className="w-16 text-center font-black text-cyan-900 bg-white border rounded shadow-inner outline-none focus:border-cyan-400" />
+                                        <div className="flex flex-col gap-2 w-full md:w-auto flex-1">
+                                            <div className="flex flex-wrap items-center gap-4">
+                                                <h3 className="font-black text-2xl text-slate-700 uppercase">{d.name}</h3>
+                                                <div className="flex items-center gap-2 bg-cyan-50 px-3 py-1.5 rounded-xl border border-cyan-100">
+                                                    <span className="text-[10px] font-black text-cyan-700 uppercase tracking-widest">นับแล้ว % :</span>
+                                                    <input type="number" min="0" max="100" value={d.progress || 0} onChange={(e) => handleProgressChange(d.id, e.target.value)} onFocus={(e) => e.target.select()} className="w-16 text-center font-black text-cyan-900 bg-white border rounded shadow-inner outline-none focus:border-cyan-400" />
+                                                </div>
+                                                <span className={`text-[10px] font-black border-2 px-3 py-1 rounded-full uppercase bg-white`}>Sync: {d.lastUpdated || 'No Data'}</span>
                                             </div>
-                                            <span className={`text-[10px] font-black border-2 px-3 py-1 rounded-full uppercase bg-white`}>Sync: {d.lastUpdated || 'No Data'}</span>
+                                            {/* เพิ่มช่องกรอกอำเภอ */}
+                                            <div className="w-full mt-1">
+                                                <textarea 
+                                                    value={d.area || ''} 
+                                                    onChange={(e) => handleDistrictFieldChange(d.id, 'area', e.target.value)} 
+                                                    placeholder="ระบุรายชื่ออำเภอ (เช่น อ.เมือง, อ.หางดง) | เพื่อขึ้นบรรทัดใหม่" 
+                                                    className="w-full text-xs p-2 rounded border bg-white/50 focus:bg-white transition-all outline-none resize-none h-auto min-h-[40px] shadow-inner" 
+                                                    rows={1}
+                                                />
+                                            </div>
                                         </div>
-                                        <div className="flex items-center gap-2">
+                                        <div className="flex items-center gap-2 mt-2 md:mt-0">
                                             <button onClick={() => resetDistrictScores(d.id)} className="bg-amber-100 text-amber-700 hover:bg-amber-200 px-4 py-2.5 rounded-xl text-xs font-black uppercase flex items-center gap-2 transition-all border border-amber-200"><RotateCcwIcon size={14}/> Reset คะแนน</button>
                                             <button onClick={() => saveData(d.id)} className="bg-green-600 text-white hover:bg-green-700 px-8 py-2.5 rounded-xl text-sm font-black uppercase shadow-xl active:scale-95 transition-all">บันทึก {d.name}</button>
                                         </div>
@@ -643,6 +669,7 @@
 
             const handleScoreChange = (distId, cNo, val) => { const score = val === '' ? 0 : parseInt(val); setLocalData(p => ({...p, districts: p.districts.map(d => d.id === distId ? {...d, candidates: d.candidates.map(c => c.no === cNo ? {...c, score: isNaN(score) ? c.score : score} : c)} : d)})); };
             const handleProgressChange = (distId, val) => { const prog = val === '' ? 0 : parseInt(val); setLocalData(p => ({...p, districts: p.districts.map(d => d.id === distId ? {...d, progress: isNaN(prog) ? d.progress : prog} : d)})); };
+            const handleDistrictFieldChange = (distId, field, val) => { setLocalData(p => ({...p, districts: p.districts.map(d => d.id === distId ? {...d, [field]: val} : d)})); };
             const handleCandidateInfoChange = (distId, cIdx, field, val) => { setLocalData(p => ({ ...p, districts: p.districts.map(d => { if (d.id !== distId) return d; const newCandidates = [...d.candidates]; newCandidates[cIdx] = { ...newCandidates[cIdx], [field]: val }; return { ...d, candidates: newCandidates }; }) })); };
             const handleSettingChange = (field, val) => { setLocalData(p => ({...p, settings: {...p.settings, [field]: val}})); };
             const handleImageChange = (distId, cNo, url) => { setLocalData(p => ({...p, districts: p.districts.map(d => d.id === distId ? {...d, candidates: d.candidates.map(c => c.no === cNo ? {...c, image: url} : c)} : d)})); };
@@ -732,7 +759,7 @@
             if (!data) return <div className="h-screen w-screen bg-slate-900 flex items-center justify-center text-white flex-col gap-4"><div className="loader"></div><div>กำลังโหลดข้อมูล...</div></div>;
             if (mode === 'admin') {
                 if (!user || user.isAnonymous) return <LoginScreen />;
-                return <AdminPanel localData={localData} setLocalData={setLocalData} handleScoreChange={handleScoreChange} handleSettingChange={handleSettingChange} saveData={saveData} handleCandidateInfoChange={handleCandidateInfoChange} handleImageChange={handleImageChange} isOnlineMode={true} saveTriggered={saveTriggered} handleBgUpload={handleBgUpload} setMode={setMode} setupError={setupError} handleProgressChange={handleProgressChange} />;
+                return <AdminPanel localData={localData} setLocalData={setLocalData} handleScoreChange={handleScoreChange} handleSettingChange={handleSettingChange} saveData={saveData} handleCandidateInfoChange={handleCandidateInfoChange} handleImageChange={handleImageChange} isOnlineMode={true} saveTriggered={saveTriggered} handleBgUpload={handleBgUpload} setMode={setMode} setupError={setupError} handleProgressChange={handleProgressChange} handleDistrictFieldChange={handleDistrictFieldChange} />;
             }
 
             return (
@@ -743,8 +770,8 @@
                     </div>
                     <header className="glass-panel flex justify-between items-center px-8 z-20 cursor-default">
                         <h1 className="text-2xl font-bold text-white thai-text drop-shadow-md uppercase truncate max-w-[70%]">{data.settings?.title}</h1>
-                        {/* Modified Clock: Switch mode instead of opening new tab */}
-                        <Clock onClick={() => setMode('admin')} />
+                        {/* Modified Clock: Open new tab for admin */}
+                        <Clock onClick={() => window.open(window.location.pathname + '?mode=admin', '_blank')} />
                     </header>
                     <main className="overflow-hidden relative" key={slideIndex}>
                         {slideIndex < 10 ? <DistrictView district={data.districts[slideIndex]} partyColors={data.partyColors} showPercentage={data.settings?.showPercentage} /> : <SummaryView data={data} partyColors={data.partyColors} />}

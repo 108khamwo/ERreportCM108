@@ -47,8 +47,8 @@
 
     <!-- Main Content -->
     <main class="flex-grow flex items-center justify-center p-6">
-        <!-- ปรับ grid เป็น 4 คอลัมน์บนจอใหญ่ (lg:grid-cols-4) และ 2 คอลัมน์บนจอปกติ (md:grid-cols-2) -->
-        <div class="max-w-7xl w-full grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        <!-- ปรับ grid เป็น 3 คอลัมน์บนจอใหญ่เพื่อให้ข้อความยาวๆ ไม่อัดกันจนเกินไป -->
+        <div class="max-w-7xl w-full grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             
             <!-- 1. Web System Card -->
             <div class="glass-card rounded-3xl p-8 flex flex-col items-center text-center border-t-4 border-blue-500">
@@ -57,7 +57,7 @@
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9h18" />
                     </svg>
                 </div>
-                <h2 class="text-xl font-bold text-gray-800 mb-2 uppercase">Website System</h2>
+                <h2 class="text-xl font-bold text-gray-800 mb-2">ระบบรายงาน-ป้อนคะแนน ผ่านเว็บไซต์</h2>
                 <p class="text-gray-600 mb-8 text-sm leading-relaxed h-12">
                     ตรวจสอบคะแนนภาพรวม สรุปผล และการแสดงผลบน PC/Tablet
                 </p>
@@ -73,7 +73,7 @@
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z" />
                     </svg>
                 </div>
-                <h2 class="text-xl font-bold text-gray-800 mb-2 uppercase">Mobile System</h2>
+                <h2 class="text-xl font-bold text-gray-800 mb-2">ระบบป้อนคะแนน ผ่านมือถือ</h2>
                 <p class="text-gray-600 mb-8 text-sm leading-relaxed h-12">
                     ระบบบันทึกคะแนนภาคสนาม สำหรับเจ้าหน้าที่หน่วยเลือกตั้งผ่านมือถือ
                 </p>
@@ -82,34 +82,50 @@
                 </a>
             </div>
 
-            <!-- 3. ERreportCM108V.2 (NEW) -->
+            <!-- 3. Offline V.2 Card -->
             <div class="glass-card rounded-3xl p-8 flex flex-col items-center text-center border-t-4 border-purple-500">
                 <div class="w-20 h-20 bg-purple-100 text-purple-600 rounded-full flex items-center justify-center mb-6">
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
                     </svg>
                 </div>
-                <h2 class="text-xl font-bold text-gray-800 mb-2 uppercase">ERreport V.2</h2>
+                <h2 class="text-xl font-bold text-gray-800 mb-2">ระบบรายงาน-ป้อนคะแนน Offline V.2</h2>
                 <p class="text-gray-600 mb-8 text-sm leading-relaxed h-12">
                     ระบบรายงานผลคะแนนเวอร์ชัน 2 อัปเกรดประสิทธิภาพและการแสดงผล
                 </p>
                 <a href="./ERreportCM108V.2/" class="w-full bg-purple-600 hover:bg-purple-700 text-white font-semibold py-4 px-4 rounded-2xl transition duration-300 shadow-lg shadow-purple-200 flex items-center justify-center space-x-2">
-                    <span>เข้าสู่ระบบ V.2</span>
+                    <span>เข้าสู่ระบบ V.2 (Offline)</span>
                 </a>
             </div>
 
-            <!-- 4. Drive Storage Card -->
+            <!-- 4. Offline (New) Card -->
+            <div class="glass-card rounded-3xl p-8 flex flex-col items-center text-center border-t-4 border-amber-500">
+                <div class="w-20 h-20 bg-amber-100 text-amber-600 rounded-full flex items-center justify-center mb-6">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18.364 5.636a9 9 0 010 12.728m0 0l-2.829-2.829m2.829 2.829L21 21M15.536 8.464a5 5 0 010 7.072m0 0l-2.829-2.829m-4.243 2.829a4.978 4.978 0 01-1.414-3.536c0-1.381.56-2.631 1.464-3.536m11.314 0A8.017 8.017 0 0121 12a8.017 8.017 0 01-1.464 4.536m-11.314-9.072a4.978 4.978 0 00-1.414 3.536c0 1.381.56 2.631 1.464 3.536M3 21l3.172-3.172M3 3l3.172 3.172" />
+                    </svg>
+                </div>
+                <h2 class="text-xl font-bold text-gray-800 mb-2">ระบบรายงาน-ป้อนคะแนน Offline</h2>
+                <p class="text-gray-600 mb-8 text-sm leading-relaxed h-12">
+                    ระบบสำรองข้อมูลและรายงานผลแบบออฟไลน์ สำหรับพื้นที่จำกัด
+                </p>
+                <a href="./ERreportCM108Offline/" class="w-full bg-amber-600 hover:bg-amber-700 text-white font-semibold py-4 px-4 rounded-2xl transition duration-300 shadow-lg shadow-amber-200 flex items-center justify-center space-x-2">
+                    <span>เข้าสู่ระบบ Offline</span>
+                </a>
+            </div>
+
+            <!-- 5. Drive Storage Card -->
             <div class="glass-card rounded-3xl p-8 flex flex-col items-center text-center border-t-4 border-emerald-500">
                 <div class="w-20 h-20 bg-emerald-100 text-emerald-600 rounded-full flex items-center justify-center mb-6">
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z" />
                     </svg>
                 </div>
-                <h2 class="text-xl font-bold text-gray-800 mb-2 uppercase">Drive Storage</h2>
+                <h2 class="text-xl font-bold text-gray-800 mb-2">พื้นที่เก็บข้อมูลระบบ</h2>
                 <p class="text-gray-600 mb-8 text-sm leading-relaxed h-12">
                     คลังเก็บข้อมูลเอกสาร แบบฟอร์ม และสื่อต่างๆ ที่เกี่ยวข้อง
                 </p>
-                <a href="https://drive.google.com/drive/folders/1on6_rB-nDp61FUCvj1cuh2i57Ph5TWC_?usp=drive_link" 
+                <a href="https://drive.google.com/drive/folders/1U5W3Zsa6E8AcQ7dXhFx3klcrvg-U0Iqa" 
                    target="_blank" 
                    rel="noopener noreferrer" 
                    class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-semibold py-4 px-4 rounded-2xl transition duration-300 shadow-lg shadow-emerald-200 flex items-center justify-center space-x-2">
@@ -129,7 +145,7 @@
         <div class="mt-4 flex justify-center space-x-6 text-xs font-medium text-gray-400">
             <span>Server Status: Online</span>
             <span>•</span>
-            <span>Version 1.2.0</span>
+            <span>Version 1.3.0</span>
         </div>
     </footer>
 
@@ -140,4 +156,3 @@
     </script>
 </body>
 </html>
-

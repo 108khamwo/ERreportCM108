@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ระบบรายงานผลเลือกตั้งเชียงใหม่ (Secure v10.9 Final + Area Fix + NewTab)</title>
+    <title>ระบบรายงานผลเลือกตั้งเชียงใหม่ (Monitor Edition v10.9 Final)</title>
     
     <!-- React & ReactDOM -->
     <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
@@ -187,7 +187,7 @@
         function LogoutIcon(p) { return <Icon {...p}><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></Icon>; }
         function PaletteIcon(p) { return <Icon {...p}><circle cx="13.5" cy="6.5" r=".5"></circle><circle cx="17.5" cy="10.5" r=".5"></circle><circle cx="8.5" cy="7.5" r=".5"></circle><circle cx="6.5" cy="12.5" r=".5"></circle><path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10c.926 0 1.648-.746 1.648-1.688 0-.437-.18-.835-.437-1.125-.29-.289-.438-.652-.438-1.125a1.64 1.64 0 0 1 1.668-1.668h1.996c3.051 0 5.555-2.503 5.555-5.554C21.965 6.012 17.461 2 12 2z"></path></Icon>; }
         function UsersIcon(p) { return <Icon {...p}><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></Icon>; }
-        function SettingsIcon(p) { return <Icon {...p}><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></Icon>; }
+        function SettingsIcon(p) { return <Icon {...p}><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></Icon>; }
         function ImageIconAdmin(p) { return <Icon {...p}><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></Icon>; }
         function GlobeIcon(p) { return <Icon {...p}><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></Icon>; }
         function PercentIcon(p) { return <Icon {...p}><line x1="19" y1="5" x2="5" y2="19"/><circle cx="6.5" cy="6.5" r="2.5"/><circle cx="17.5" cy="17.5" r="2.5"/></Icon>; }
@@ -198,6 +198,7 @@
         function PlusIcon(p) { return <Icon {...p}><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></Icon>; }
         function TrashIcon(p) { return <Icon {...p}><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path><line x1="10" y1="11" x2="10" y2="17"></line><line x1="14" y1="11" x2="14" y2="17"></line></Icon>; }
         function RotateCcwIcon(p) { return <Icon {...p}><polyline points="1 4 1 10 7 10"></polyline><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"></path></Icon>; }
+        function ActivityIcon(p) { return <Icon {...p}><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline></Icon>; }
 
         // --- Shared UI Components ---
         function Clock({ onClick }) {
@@ -345,20 +346,21 @@
         }
 
         // --- Admin Panel (Updated with Delete & Reset Fixes) ---
-        function AdminPanel({ localData, setLocalData, handleScoreChange, handleSettingChange, saveData, handleCandidateInfoChange, handleImageChange, isOnlineMode, saveTriggered, handleBgUpload, setMode, setupError, handleProgressChange, handleDistrictFieldChange }) {
+        function AdminPanel({ localData, setLocalData, handleScoreChange, handleSettingChange, saveData, handleCandidateInfoChange, handleImageChange, isOnlineMode, saveTriggered, handleBgUpload, setMode, setupError, handleProgressChange, handleDistrictFieldChange, sessionStats }) {
             const [adminFilter, setAdminFilter] = useState('all'); const [imageModalData, setImageModalData] = useState(null); const [isPartyModalOpen, setIsPartyModalOpen] = useState(false); const [autoStatus, setAutoStatus] = useState('idle'); const bgInputRef = useRef(null);
             
             // --- FIX: Robust check for districts array ---
-            // If localData or districts is missing/invalid, render nothing or loading
             if (!localData || !localData.districts) return null;
-
-            // SAFEGUARD: Ensure districts is always an array to prevent "map is not a function"
             const districts = Array.isArray(localData.districts) ? localData.districts : [];
             
             const enabledSlides = localData.settings.enabledSlides || ALL_SLIDES; 
             const syncImmediate = async (d) => { if (isOnlineMode) await getDocRef().set(d); };
             const setDisplayModeImmediate = async (m, s = 0) => { setAutoStatus('processing'); const n = { ...localData, settings: { ...localData.settings, displayMode: m, activeSlide: parseInt(s) } }; setLocalData(n); await getDocRef().update({settings: n.settings}); setAutoStatus('success'); setTimeout(() => setAutoStatus('idle'), 2000); };
-            const handleLightUpdate = async (f, v) => { const n = { ...localData, settings: { ...localData.settings, [f]: v } }; setLocalData(n); await getDocRef().update({settings: n.settings}); };
+            
+            // FIX: Optimize Light Update to save only on release
+            const handleLightChange = (val) => { setLocalData(p => ({ ...p, settings: { ...p.settings, lightBrightness: val } })); };
+            const handleLightSave = async () => { await getDocRef().update({settings: localData.settings}); };
+
             const toggleSlideEnabled = (idx) => { let e = [...(localData.settings.enabledSlides || ALL_SLIDES)]; if (e.includes(idx)) { if (e.length > 1) e = e.filter(s => s !== idx); } else { e.push(idx); e.sort((a,b) => a-b); } handleSettingChange('enabledSlides', e); };
             const setEnabledShortcut = (t) => { let l = []; if (t === 'all') l = [...ALL_SLIDES]; else if (t === 'districts') l = [0,1,2,3,4,5,6,7,8,9]; else if (t === 'summary') l = [10]; handleSettingChange('enabledSlides', l); };
 
@@ -395,14 +397,11 @@
                 const candidateName = district.candidates[index].name;
                 
                 if (window.confirm(`⚠️ คุณแน่ใจหรือไม่ว่าต้องการลบผู้สมัคร: ${candidateName}?`)) {
-                    // Create deep clone for safety
                     const newData = JSON.parse(JSON.stringify(localData));
                     const dIdx = newData.districts.findIndex(d => d.id === districtId);
-                    
                     if (dIdx !== -1) {
                         newData.districts[dIdx].candidates.splice(index, 1);
                         setLocalData(newData);
-                        // Auto-save the change using the NEW data
                         saveData(districtId, newData);
                     }
                 }
@@ -412,12 +411,10 @@
                 if (window.confirm(`🔄 คุณแน่ใจหรือไม่ว่าต้องการรีเซ็ตคะแนนทั้งหมดใน เขต ${districtId} เป็นศูนย์?`)) {
                     const newData = JSON.parse(JSON.stringify(localData));
                     const dIdx = newData.districts.findIndex(d => d.id === districtId);
-                    
                     if (dIdx !== -1) {
                         newData.districts[dIdx].candidates = newData.districts[dIdx].candidates.map(c => ({...c, score: 0}));
                         newData.districts[dIdx].progress = 0;
                         setLocalData(newData);
-                        // Auto-save the change using the NEW data
                         saveData(districtId, newData);
                     }
                 }
@@ -452,7 +449,7 @@
                     try {
                         const importedData = JSON.parse(event.target.result);
                         setLocalData(importedData);
-                        saveData(null, importedData); // Use new save signature
+                        saveData(null, importedData); 
                         alert("กู้คืนข้อมูลสำเร็จ");
                     } catch (err) { alert("ไฟล์ไม่ถูกต้อง"); }
                 };
@@ -466,6 +463,23 @@
                     <PartyColorModal isOpen={isPartyModalOpen} onClose={() => setIsPartyModalOpen(false)} currentColors={localData.partyColors} onUpdate={async (nc) => { const n={...localData, partyColors:nc}; setLocalData(n); await getDocRef().update({partyColors: nc}); }} />
                     <nav className="bg-white border-b px-8 py-3 flex justify-between items-center z-50 shadow-md">
                         <div className="flex items-center gap-3"><button onClick={() => setMode('viewer')} className="bg-slate-100 hover:bg-slate-200 p-2 rounded-lg text-slate-600 transition-colors"><MonitorIcon size={20}/></button><h1 className="text-xl font-black uppercase tracking-tighter">ADMIN PANEL</h1></div>
+                        
+                        {/* SESSION MONITOR HUD */}
+                        <div className="flex items-center gap-4 bg-slate-800 text-white px-4 py-1.5 rounded-lg shadow-inner">
+                            <div className="flex items-center gap-2 border-r border-slate-600 pr-3">
+                                <ActivityIcon size={14} className="text-blue-400"/>
+                                <span className="text-[10px] font-bold uppercase text-slate-400">Session Stats</span>
+                            </div>
+                            <div className="flex items-center gap-2">
+                                <span className="text-[10px] font-bold text-slate-400 uppercase">Reads:</span>
+                                <span className={`text-xs font-mono font-bold ${sessionStats.reads > 100 ? 'text-red-400 animate-pulse' : 'text-green-400'}`}>{sessionStats.reads}</span>
+                            </div>
+                            <div className="flex items-center gap-2">
+                                <span className="text-[10px] font-bold text-slate-400 uppercase">Writes:</span>
+                                <span className={`text-xs font-mono font-bold ${sessionStats.writes > 50 ? 'text-yellow-400' : 'text-blue-400'}`}>{sessionStats.writes}</span>
+                            </div>
+                        </div>
+
                         <div className="flex items-center gap-4">
                             <div className="text-[9px] px-3 py-1 rounded-full font-black border uppercase tracking-widest bg-green-50 text-green-600 border-green-200">● Online Real-time</div>
                             <button onClick={() => setIsPartyModalOpen(true)} className="text-xs font-bold text-pink-600 hover:text-pink-700 px-3 py-1.5 bg-pink-50 rounded-lg border border-pink-100 flex items-center gap-2 transition-all hover:scale-105"><PaletteIcon size={14}/> จัดการสีพรรค</button>
@@ -497,7 +511,7 @@
                                         </div>
                                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 p-3 bg-blue-50 rounded-2xl border border-blue-100 md:col-span-2">
                                             <div className="space-y-1.5"><label className="text-[10px] font-black text-blue-500 uppercase tracking-widest ml-1">Visual Effect</label><div className="flex items-center gap-2"><button onClick={() => handleLightUpdate('showLightEffect', !localData.settings.showLightEffect)} className={`w-full py-1.5 rounded-lg text-[10px] font-black transition-all shadow-sm ${localData.settings.showLightEffect ? 'bg-blue-600 text-white shadow-md' : 'bg-white text-slate-400 border'}`}>{localData.settings.showLightEffect ? 'เปิดลำแสง' : 'ปิดลำแสง'}</button></div></div>
-                                            <div className="space-y-1.5"><label className="text-[10px] font-black text-blue-500 uppercase tracking-widest ml-1 flex justify-between items-center"><span>Brightness</span><span className="text-blue-600">{localData.settings.lightBrightness || 70}%</span></label><input type="range" min="0" max="100" value={localData.settings.lightBrightness || 70} onChange={(e) => handleLightUpdate('lightBrightness', parseInt(e.target.value))} className="w-full h-1.5 bg-blue-200 rounded-lg appearance-none cursor-pointer accent-blue-600"/></div>
+                                            <div className="space-y-1.5"><label className="text-[10px] font-black text-blue-500 uppercase tracking-widest ml-1 flex justify-between items-center"><span>Brightness</span><span className="text-blue-600">{localData.settings.lightBrightness || 70}%</span></label><input type="range" min="0" max="100" value={localData.settings.lightBrightness || 70} onChange={(e) => handleLightChange(parseInt(e.target.value))} onMouseUp={handleLightSave} onTouchEnd={handleLightSave} className="w-full h-1.5 bg-blue-200 rounded-lg appearance-none cursor-pointer accent-blue-600"/></div>
                                         </div>
                                         <div className="p-3 bg-cyan-50 rounded-2xl border border-cyan-100 md:col-span-2 flex items-center justify-between">
                                             <div className="flex items-center gap-3">
@@ -611,12 +625,17 @@
             const [saveTriggered, setSaveTriggered] = useState(false);
             const [marqueeKey, setMarqueeKey] = useState(0);
             const [setupError, setSetupError] = useState(null);
+            
+            // Stats Monitor
+            const [sessionStats, setSessionStats] = useState({ reads: 0, writes: 0 });
 
             useEffect(() => {
                 const unsubscribe = auth.onAuthStateChanged((u) => { 
                     setUser(u);
                     if (!u) {
                         getDocRef().onSnapshot((doc) => {
+                            // Monitor Read
+                            setSessionStats(p => ({...p, reads: p.reads + 1}));
                             if (doc.exists) { setData(doc.data()); setLocalData(JSON.parse(JSON.stringify(doc.data()))); }
                             else { getDocRef().set(INITIAL_DATA); }
                         }, (err) => console.error(err));
@@ -628,6 +647,8 @@
             useEffect(() => {
                 if (user) {
                     const unsubscribe = getDocRef().onSnapshot((doc) => {
+                        // Monitor Read
+                        setSessionStats(p => ({...p, reads: p.reads + 1}));
                         if (doc.exists) { 
                             const cloudData = doc.data();
                             setData(cloudData); 
@@ -693,6 +714,9 @@
                 
                 if (!dataToSave) return; 
                 try {
+                    // Monitor Write
+                    setSessionStats(p => ({...p, writes: p.writes + 1}));
+                    
                     // 1. Get latest data from server first (to avoid overwriting others)
                     const docRef = getDocRef();
                     const docSnap = await docRef.get();
@@ -759,7 +783,7 @@
             if (!data) return <div className="h-screen w-screen bg-slate-900 flex items-center justify-center text-white flex-col gap-4"><div className="loader"></div><div>กำลังโหลดข้อมูล...</div></div>;
             if (mode === 'admin') {
                 if (!user || user.isAnonymous) return <LoginScreen />;
-                return <AdminPanel localData={localData} setLocalData={setLocalData} handleScoreChange={handleScoreChange} handleSettingChange={handleSettingChange} saveData={saveData} handleCandidateInfoChange={handleCandidateInfoChange} handleImageChange={handleImageChange} isOnlineMode={true} saveTriggered={saveTriggered} handleBgUpload={handleBgUpload} setMode={setMode} setupError={setupError} handleProgressChange={handleProgressChange} handleDistrictFieldChange={handleDistrictFieldChange} />;
+                return <AdminPanel localData={localData} setLocalData={setLocalData} handleScoreChange={handleScoreChange} handleSettingChange={handleSettingChange} saveData={saveData} handleCandidateInfoChange={handleCandidateInfoChange} handleImageChange={handleImageChange} isOnlineMode={true} saveTriggered={saveTriggered} handleBgUpload={handleBgUpload} setMode={setMode} setupError={setupError} handleProgressChange={handleProgressChange} handleDistrictFieldChange={handleDistrictFieldChange} sessionStats={sessionStats} />;
             }
 
             return (
